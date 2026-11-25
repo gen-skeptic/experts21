@@ -3,13 +3,13 @@ import { useState } from "react";
 
 interface Props {
   busy: boolean;
-  disabled: boolean;
+  disabled?: boolean;
   placeholder: string;
   onSend: (text: string) => void;
   onStop: () => void;
 }
 
-export function Composer({ busy, disabled, placeholder, onSend, onStop }: Props) {
+export function Composer({ busy, disabled = false, placeholder, onSend, onStop }: Props) {
   const [text, setText] = useState("");
   const submit = () => {
     const value = text.trim();

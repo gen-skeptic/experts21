@@ -279,7 +279,7 @@ export function App() {
       <main className="chat">
         {!catalog.configured ? (
           <p className="banner">
-            This site has no Claude API key yet. The owner adds <code>ANTHROPIC_API_KEY</code> in Netlify (Project configuration → Environment variables) and redeploys.
+            This site may not have Claude API access yet. The owner adds <code>ANTHROPIC_API_KEY</code> in Netlify (Project configuration → Environment variables) and redeploys. Questions may fail until then.
           </p>
         ) : null}
         <section className="chat-head">
@@ -355,7 +355,6 @@ export function App() {
         </section>
         <Composer
           busy={isBusy}
-          disabled={!catalog.configured}
           placeholder={agent ? `Message ${agent.name}…` : "Ask the whole team…"}
           onSend={(text) => void (agent ? askAgent(agent.id, text) : askTeam(text))}
           onStop={() => controllers.current[selected]?.abort()}

@@ -2,7 +2,8 @@
 
 A team of **50 synthetic employees**, expert AI agents built with Claude Code, for **Dautel Intelligent Operations (DIO)**, an AI consulting and deployment firm in Boynton Beach, Florida. They advise on planning, opening and running the firm, each with its own knowledge, brain and Star Trek personality, and they work together through an orchestrator. Built by following the "Build a team of synthetic employees with Claude Code" guide, steps 1 to 11, for the multi-agent systems course.
 
-- **Live app:** <!-- NETLIFY-URL --> (see [web/README.md](web/README.md) to deploy your own)
+- **Live app:** <https://dio-experts21.netlify.app> (deploy steps in [web/README.md](web/README.md))
+- **Source:** <https://github.com/gen-skeptic/experts21>
 - **Talk to the team:** [docs/how-to-talk-to-your-experts.md](docs/how-to-talk-to-your-experts.md)
 
 ## What's here

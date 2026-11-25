@@ -35,7 +35,7 @@ export async function guard(req: Request): Promise<{ body: Record<string, unknow
   if (origin && origin !== new URL(req.url).origin) return { error: json(403, { message: "Cross-site requests are not allowed." }) };
   if (!passwordOk(req)) return { error: json(401, { message: "This app needs its password.", passwordRequired: true }) };
   if (!env("ANTHROPIC_API_KEY")) {
-    return { error: json(503, { message: "ANTHROPIC_API_KEY is not set. Add it in Netlify under Project configuration > Environment variables, then redeploy." }) };
+    return { error: json(503, { message: "No Claude API access: add ANTHROPIC_API_KEY in Netlify under Project configuration > Environment variables (or turn on Netlify's AI features), then redeploy." }) };
   }
   const raw = await req.text();
   if (raw.length > 200_000) return { error: json(413, { message: "The request is too large." }) };

@@ -10,7 +10,7 @@ flowchart LR
 ```
 
 - **The agents are read from this repository at build time** (`scripts/build-agents.mjs`): every `.claude/agents/*.md` (instructions, name, voice, brain, skills), the skills they use, each `knowledge/<agent>/` folder and the `docs/` research files each agent relies on. They are packaged for the functions only; the browser bundle carries no prompts, knowledge or research.
-- **The Claude API key never reaches the browser.** Every model call runs in a Netlify Function, with the key from the `ANTHROPIC_API_KEY` environment variable.
+- **The Claude API key never reaches the browser.** Every model call runs in a Netlify Function, with the key from the `ANTHROPIC_API_KEY` environment variable (yours, or the one Netlify's AI Gateway injects on credit-based plans).
 - **Each agent runs on its own brain** (Opus, Sonnet or Haiku). Because Netlify stops a function after 60 seconds, the web app caps effort at medium and stops an answer at about 50 seconds. Opus and Sonnet calls turn on Anthropic's server-side refusal fallback. Each agent's context is cached, so follow-up questions cost less.
 - **Team mode** is three steps, each its own short request: Picard makes a routing plan (structured JSON), the browser asks every assigned expert in parallel through `/api/chat`, and Picard combines the answers.
 - **Optional password:** set `APP_PASSWORD` and the app asks for it before anyone can spend your API credit. Each function is also rate limited per visitor.
@@ -25,6 +25,15 @@ flowchart LR
 | `scripts/test-functions.mjs` | Tests the functions against a mock Claude API (no key, no cost) |
 | `scripts/serve.mjs` | Runs the built app and the functions locally |
 | `../netlify.toml` | Tells Netlify how to build: base `web`, command `npm run build`, publish `dist` |
+
+## The live app
+
+**<https://dio-experts21.netlify.app>** (Netlify project `dio-experts21` on the gen-skeptic team, Free plan), deployed November 25, 2026.
+
+Two things to finish in the Netlify UI, because they need your accounts:
+
+1. **Link the GitHub repository** so every push to `main` rebuilds the site: open the project, **Project configuration → Build & deploy → Continuous deployment → Link repository → GitHub → gen-skeptic/experts21**, branch `main`. Leave the build settings empty; `netlify.toml` fills them in.
+2. **Choose who pays for the answers.** Netlify's **AI Gateway** is on for credit-based plans: it gives the functions Claude credentials automatically and bills your **Netlify credits** (the Free plan's AI rate limit is 90 credits a minute for the whole team, about $0.50 of model use, so team questions can be slowed or refused at busy moments). To use your own Anthropic key instead, as the guide does, add `ANTHROPIC_API_KEY` (step 4 below) and redeploy; Netlify then defers to your key. Add `APP_PASSWORD` too if the link will be shared widely.
 
 ## Deploy on Netlify
 

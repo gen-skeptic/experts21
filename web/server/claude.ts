@@ -35,6 +35,14 @@ export function webEffort(effort: string, cap?: Effort): Effort {
   return EFFORTS.indexOf(want) <= EFFORTS.indexOf(limit) ? want : limit;
 }
 
+/**
+ * True when the functions can call Claude: an ANTHROPIC_API_KEY set in Netlify, or Netlify's AI Gateway, which injects
+ * Claude credentials into functions on credit-based plans (billed to Netlify credits) unless you set your own key.
+ */
+export function aiConfigured(): boolean {
+  return env("ANTHROPIC_API_KEY") !== "" || env("NETLIFY_AI_GATEWAY_KEY") !== "";
+}
+
 let client: Anthropic | null = null;
 function anthropic(): Anthropic {
   client ??= new Anthropic({

@@ -193,6 +193,17 @@ await test("APP_PASSWORD: model calls need the password; the list says so", asyn
   }
 });
 
+await test("Netlify AI Gateway: its injected key counts as configured", async () => {
+  process.env.ANTHROPIC_API_KEY = "";
+  process.env.NETLIFY_AI_GATEWAY_KEY = "gateway-key";
+  try {
+    assert.equal((await (await call("GET", "/api/agents")).json()).configured, true);
+  } finally {
+    delete process.env.NETLIFY_AI_GATEWAY_KEY;
+    process.env.ANTHROPIC_API_KEY = "test-key";
+  }
+});
+
 await test("no ANTHROPIC_API_KEY: the list loads, model calls explain what to set", async () => {
   process.env.ANTHROPIC_API_KEY = "";
   try {

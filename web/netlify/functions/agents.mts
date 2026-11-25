@@ -1,7 +1,7 @@
 // GET /api/agents: the sidebar. Names, roles, personalities and brains only; prompts and knowledge stay on the server.
 import type { Config } from "@netlify/functions";
 import { DATA } from "../../server/agents-data.generated.js";
-import { env } from "../../server/env.js";
+import { aiConfigured } from "../../server/claude.js";
 import { json, passwordOk, passwordRequired } from "../../server/http.js";
 
 export default async (req: Request) => {
@@ -29,7 +29,7 @@ export default async (req: Request) => {
     groups: DATA.groups,
     brains: DATA.brains,
     orchestrator: DATA.orchestrator,
-    configured: env("ANTHROPIC_API_KEY") !== "",
+    configured: aiConfigured(),
     passwordRequired: passwordRequired(),
     passwordOk: req.headers.has("x-app-password") ? passwordOk(req) : undefined,
     source: DATA.source,
