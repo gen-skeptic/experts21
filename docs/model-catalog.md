@@ -108,7 +108,7 @@ The Claude API call for the same work is `POST https://api.anthropic.com/v1/mess
 
 ## Privacy and routing rules
 
-- **Client confidential data** goes only to the Claude API directly or to OpenRouter with zero data retention enforced. The web app enforces it by default (`OPENROUTER_ZDR`, on unless set to `false`).
+- **Client confidential data** goes only to the Claude API directly or to OpenRouter with zero data retention enforced. The web app enforces it by default (`OPENROUTER_ZDR`, on unless set to `false`). Every model in the catalog had at least one zero-data-retention endpoint that supports structured outputs on 2026-11-25, so the default rules none of them out.
 - **Regulated data** (patient records, privileged legal files, anything under a BAA) goes to no model without a signed agreement that covers it. When unsure, use Claude on the Claude API and say so.
 - **Review with a different family** than the one that wrote the work; the QA gate's primary is Gemini for that reason.
 - **Recommending a model to a client** also goes through `vendor-and-tool-approval` (data terms, retention, BAA, exit path).
@@ -119,6 +119,7 @@ The Claude API call for the same work is `POST https://api.anthropic.com/v1/mess
 - OpenRouter benchmarks: GPQA Diamond: <https://openrouter.ai/benchmarks/gpqa-diamond> (retrieved 2026-11-25)
 - OpenRouter benchmarks: tau2-Bench Airline: <https://openrouter.ai/benchmarks/tau2-bench-airline> (retrieved 2026-11-25)
 - Benchmark leaderboard export, snapshot 2026-11-25 (CC BY 4.0): <https://openrouter.ai/api/v1/datasets/exports/benchmark-leaderboard/2026-11-25.json> (retrieved 2026-11-25)
+- OpenRouter zero-data-retention endpoints (each catalog model has one that supports structured outputs): <https://openrouter.ai/api/v1/endpoints/zdr> (retrieved 2026-11-25)
 - OpenRouter API: provider routing and zero data retention: <https://openrouter.ai/docs/guides/routing/provider-selection.md> (retrieved 2026-11-25)
 - OpenRouter API: structured outputs: <https://openrouter.ai/docs/guides/features/structured-outputs.md> (retrieved 2026-11-25)
 - OpenRouter API: reasoning effort: <https://openrouter.ai/docs/guides/best-practices/reasoning-tokens.md> (retrieved 2026-11-25)

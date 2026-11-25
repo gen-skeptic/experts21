@@ -22,6 +22,23 @@ export function saveConversation(key: string, messages: ChatMessage[]): void {
   }
 }
 
+/** The model menu choice ("auto", "claude" or a model key), remembered in this browser. */
+export function loadModelChoice(): string {
+  try {
+    return window.localStorage.getItem(PREFIX + "model") || "auto";
+  } catch {
+    return "auto";
+  }
+}
+
+export function saveModelChoice(choice: string): void {
+  try {
+    window.localStorage.setItem(PREFIX + "model", choice);
+  } catch {
+    // ignore
+  }
+}
+
 /** The app password (only when the site owner set APP_PASSWORD), kept for this browser tab only. */
 export function loadPassword(): string {
   try {

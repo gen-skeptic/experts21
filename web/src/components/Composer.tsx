@@ -1,15 +1,17 @@
 import { SendHorizontal, Square } from "lucide-react";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 
 interface Props {
   busy: boolean;
   disabled?: boolean;
   placeholder: string;
+  /** Shown at the start of the bar under the text box (the model menu). */
+  tools?: ReactNode;
   onSend: (text: string) => void;
   onStop: () => void;
 }
 
-export function Composer({ busy, disabled = false, placeholder, onSend, onStop }: Props) {
+export function Composer({ busy, disabled = false, placeholder, tools, onSend, onStop }: Props) {
   const [text, setText] = useState("");
   const submit = () => {
     const value = text.trim();
@@ -40,7 +42,8 @@ export function Composer({ busy, disabled = false, placeholder, onSend, onStop }
         aria-label="Message"
       />
       <div className="composer-bar">
-        <span className="hint">Enter to send · Shift+Enter for a new line · every answer is billed to the site owner's Claude API key, so keep it short</span>
+        {tools}
+        <span className="hint">Enter to send · Shift+Enter for a new line · answers are billed to the site owner's API keys</span>
         {busy ? (
           <button type="button" className="button button-secondary" onClick={onStop}>
             <Square size={14} aria-hidden /> Stop

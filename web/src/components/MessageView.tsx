@@ -1,12 +1,19 @@
 import { AlertTriangle, Loader2 } from "lucide-react";
-import type { Catalog, ChatMessage, TeamMember } from "../types";
+import type { Catalog, ChatMessage, ReplyMeta, TeamMember } from "../types";
 import { BrainBadge } from "./BrainBadge";
 import { Markdown } from "./Markdown";
+import { money } from "./ModelMenu";
+
+export function metaLine(m: ReplyMeta | undefined): string | null {
+  if (!m || !m.model) return null;
+  const via = m.api === "OpenRouter" && m.provider ? `OpenRouter (${m.provider})` : m.api;
+  const cost = typeof m.cost === "number" ? `${money(m.cost)}${m.costEstimated ? " est." : ""}` : null;
+  return [m.model, via, m.taskType, m.effort ? `effort ${m.effort}` : null, cost].filter(Boolean).join(" · ");
+}
 
 function Meta({ message }: { message: ChatMessage }) {
-  const m = message.meta;
-  if (!m || !m.model) return null;
-  return <p className="reply-meta">{[m.model, m.effort ? `effort ${m.effort}` : null].filter(Boolean).join(" · ")}</p>;
+  const line = metaLine(message.meta);
+  return line ? <p className="reply-meta">{line}</p> : null;
 }
 
 function Member({ member, catalog }: { member: TeamMember; catalog: Catalog }) {
@@ -17,13 +24,15 @@ function Member({ member, catalog }: { member: TeamMember; catalog: Catalog }) {
         <span className="member-name">
           <strong>{member.name}</strong> <small>{member.title}</small>
         </span>
-        <BrainBadge alias={member.brain} brains={catalog.brains} effort={member.effort} />
+        {member.meta?.model ? <span className="model-tag">{member.meta.model}</span> : <BrainBadge alias={member.brain} brains={catalog.brains} effort={member.effort} />}
         {working ? <Loader2 className="spin" size={14} aria-label="Working" /> : null}
       </summary>
       <p className="member-question">
         <em>Asked:</em> {member.question || "the original question"}
         {member.reason ? <span className="member-reason"> — {member.reason}</span> : null}
+        {member.taskType ? <span className="member-reason"> ({member.taskType})</span> : null}
       </p>
+      {member.meta?.notice ? <p className="notice-line member-question">{member.meta.notice}</p> : null}
       {member.error ? (
         <p className="error-line">
           <AlertTriangle size={14} aria-hidden /> {member.error}
@@ -33,7 +42,7 @@ function Member({ member, catalog }: { member: TeamMember; catalog: Catalog }) {
       ) : member.thinking ? (
         <p className="thinking-line">Thinking…</p>
       ) : null}
-      {member.model ? <p className="reply-meta">{member.model}</p> : null}
+      {member.status === "done" && metaLine(member.meta) ? <p className="reply-meta">{metaLine(member.meta)}</p> : null}
     </details>
   );
 }
@@ -60,6 +69,12 @@ export function MessageView({ message, catalog, speaker }: { message: ChatMessag
             {team.status === "done" && team.members.length ? `Answered with ${team.members.map((m) => m.name).join(", ")}.` : null}
           </p>
           {team.summary ? <p className="team-summary">{team.summary}</p> : null}
+          {team.planMeta?.model ? <p className="reply-meta">Routing plan: {metaLine(team.planMeta)}</p> : null}
+          {(team.notices ?? []).map((n) => (
+            <p key={n} className="notice-line">
+              {n}
+            </p>
+          ))}
           {team.members.map((m) => (
             <Member key={m.agent} member={m} catalog={catalog} />
           ))}

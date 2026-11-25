@@ -18,6 +18,10 @@
       "url": "https://openrouter.ai/api/v1/datasets/exports/benchmark-leaderboard/2026-11-25.json"
     },
     {
+      "label": "OpenRouter zero-data-retention endpoints (each catalog model has one that supports structured outputs)",
+      "url": "https://openrouter.ai/api/v1/endpoints/zdr"
+    },
+    {
       "label": "OpenRouter API: provider routing and zero data retention",
       "url": "https://openrouter.ai/docs/guides/routing/provider-selection.md"
     },

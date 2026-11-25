@@ -4,9 +4,10 @@ import { ApiError, getCatalog, postJson, stream } from "./api";
 import { BrainBadge } from "./components/BrainBadge";
 import { Composer } from "./components/Composer";
 import { MessageView } from "./components/MessageView";
+import { ModelMenu } from "./components/ModelMenu";
 import { Sidebar } from "./components/Sidebar";
-import { loadConversation, saveConversation, savePassword } from "./storage";
-import type { Assignment, Catalog, ChatMessage, TeamMember, TeamRun } from "./types";
+import { loadConversation, loadModelChoice, saveConversation, saveModelChoice, savePassword } from "./storage";
+import type { Assignment, Catalog, ChatMessage, ReplyMeta, TeamMember, TeamRun } from "./types";
 import { TEAM_KEY } from "./types";
 
 const REPO_URL = "https://github.com/gen-skeptic/experts21";
@@ -43,6 +44,13 @@ function PasswordGate({ message, onSubmit }: { message: string; onSubmit: (passw
   );
 }
 
+function autoModelText(catalog: Catalog, taskName: string): string {
+  const task = catalog.taskTypes.find((t) => t.name === taskName);
+  if (!task) return "the agent's own brain";
+  const name = (key: string) => catalog.models.find((m) => m.key === key)?.name ?? key;
+  return `${name(task.primary)} for ${task.name.charAt(0).toLowerCase()}${task.name.slice(1)} (${task.tier} tier), fallback ${name(task.fallback)}, then the agent's own Claude brain.`;
+}
+
 export function App() {
   const [phase, setPhase] = useState<Phase>({ kind: "loading" });
   const [catalog, setCatalog] = useState<Catalog | null>(null);
@@ -51,6 +59,7 @@ export function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [conversations, setConversations] = useState<Record<string, ChatMessage[]>>({});
   const [busy, setBusy] = useState<Set<string>>(new Set());
+  const [modelChoice, setModelChoice] = useState<string>(() => loadModelChoice());
   const controllers = useRef<Record<string, AbortController>>({});
   const endRef = useRef<HTMLDivElement>(null);
 
@@ -60,9 +69,10 @@ export function App() {
     try {
       const c = await getCatalog();
       setCatalog(c);
+      setModelChoice((v) => (v === "auto" || v === "claude" || c.models.some((m) => m.key === v) ? v : "auto"));
       if (c.passwordRequired && c.passwordOk !== true) {
         savePassword("");
-        setPhase({ kind: "password", message: c.passwordOk === false ? "That password didn't work. Try again." : "The owner of this app set a password, so only people they share it with can spend its Claude API credit." });
+        setPhase({ kind: "password", message: c.passwordOk === false ? "That password didn't work. Try again." : "The owner of this app set a password, so only people they share it with can spend its API credit." });
       } else setPhase({ kind: "ready" });
     } catch (e) {
       setPhase({ kind: "error", message: e instanceof Error ? e.message : "The app could not load." });
@@ -110,8 +120,11 @@ export function App() {
     return error instanceof Error ? error.message : "Something went wrong.";
   };
 
+  const mergeMeta = (prev: ReplyMeta | undefined, data: Record<string, unknown>): ReplyMeta => ({ ...prev, ...(data as ReplyMeta) });
+
   // ------------------------------------------------------------ one expert
   async function askAgent(agentId: string, text: string) {
+    const choice = modelChoice;
     const user: ChatMessage = { id: newId(), role: "user", content: text };
     const reply: ChatMessage = { id: newId(), role: "assistant", content: "", pending: true, meta: {} };
     const turns = [...history(messages), { role: user.role, content: user.content }];
@@ -122,11 +135,11 @@ export function App() {
     try {
       await stream(
         "chat",
-        { agent: agentId, messages: turns },
+        { agent: agentId, messages: turns, model: choice },
         (event, data) => {
           if (event === "delta") patchMessage(agentId, reply.id, (m) => ({ ...m, content: m.content + String(data.text ?? "") }));
           else if (event === "thinking") patchMessage(agentId, reply.id, (m) => ({ ...m, meta: { ...m.meta, thinking: true } }));
-          else if (event === "meta" || event === "done") patchMessage(agentId, reply.id, (m) => ({ ...m, meta: { ...m.meta, ...(data as object) } }));
+          else if (event === "meta" || event === "done") patchMessage(agentId, reply.id, (m) => ({ ...m, meta: mergeMeta(m.meta, data) }));
           else if (event === "notice") patchMessage(agentId, reply.id, (m) => ({ ...m, meta: { ...m.meta, notice: String(data.message) } }));
         },
         controller.signal,
@@ -143,6 +156,7 @@ export function App() {
 
   // ------------------------------------------------------------ the whole team, routed by the orchestrator
   async function askTeam(text: string) {
+    const choice = modelChoice;
     const user: ChatMessage = { id: newId(), role: "user", content: text };
     const reply: ChatMessage = { id: newId(), role: "assistant", content: "", pending: true, team: { status: "routing", members: [] } };
     const turns = [...history(messages), { role: user.role, content: user.content }];
@@ -151,10 +165,11 @@ export function App() {
     controllers.current[TEAM_KEY] = controller;
     setWorking(TEAM_KEY, true);
     try {
-      // 1. The orchestrator decides who answers what, on which brain.
-      const plan = await postJson<{ summary: string; assignments: Assignment[]; routedBy?: string }>("team/plan", { messages: turns }, controller.signal);
-      const members: TeamMember[] = plan.assignments.map((a) => ({ ...a, text: "", status: "waiting" }));
-      patchTeam(reply.id, (t) => ({ ...t, status: members.length ? "asking" : "combining", summary: plan.summary, members, routedBy: plan.routedBy }));
+      // 1. The orchestrator decides who answers what, with which task type and model.
+      const plan = await postJson<{ summary: string; assignments: Assignment[]; routedBy?: string; notices?: string[] } & ReplyMeta>("team/plan", { messages: turns, model: choice }, controller.signal);
+      const members: TeamMember[] = plan.assignments.map((a) => ({ ...a, text: "", status: "waiting", meta: choice === "auto" ? { model: a.modelName } : undefined }));
+      const planMeta: ReplyMeta = { model: plan.model, api: plan.api, cost: plan.cost, costEstimated: plan.api === "Claude API" };
+      patchTeam(reply.id, (t) => ({ ...t, status: members.length ? "asking" : "combining", summary: plan.summary, members, routedBy: plan.routedBy, planMeta, notices: plan.notices }));
 
       // 2. Every assigned expert answers its part, all at the same time.
       const answers = await Promise.all(
@@ -166,13 +181,21 @@ export function App() {
             patchMember({ status: "streaming" });
             await stream(
               "chat",
-              { agent: member.agent, brain: member.brain, effort: member.effort, assignment: { original: text, summary: plan.summary, question: member.question, reason: member.reason } },
+              {
+                agent: member.agent,
+                model: choice,
+                taskType: member.taskType,
+                ...(choice === "auto" ? { planned: member.model } : {}),
+                ...(choice === "claude" ? { brain: member.brain, effort: member.effort } : {}),
+                assignment: { original: text, summary: plan.summary, question: member.question, reason: member.reason },
+              },
               (event, data) => {
                 if (event === "delta") {
                   answer += String(data.text ?? "");
                   patchMember((m) => ({ text: m.text + String(data.text ?? "") }));
                 } else if (event === "thinking") patchMember({ thinking: true });
-                else if (event === "done") patchMember({ model: String(data.model ?? "") });
+                else if (event === "meta" || event === "done") patchMember((m) => ({ meta: mergeMeta(m.meta, data) }));
+                else if (event === "notice") patchMember((m) => ({ meta: { ...m.meta, notice: String(data.message) } }));
               },
               controller.signal,
             );
@@ -189,12 +212,12 @@ export function App() {
       patchTeam(reply.id, (t) => ({ ...t, status: "combining" }));
       await stream(
         "team/synthesize",
-        { messages: turns, summary: plan.summary, answers: answers.filter((a) => a.text.trim()) },
+        { messages: turns, summary: plan.summary, answers: answers.filter((a) => a.text.trim()), model: choice },
         (event, data) => {
           if (event === "delta") patchMessage(TEAM_KEY, reply.id, (m) => ({ ...m, content: m.content + String(data.text ?? "") }));
           else if (event === "thinking") patchMessage(TEAM_KEY, reply.id, (m) => ({ ...m, meta: { ...m.meta, thinking: true } }));
           else if (event === "notice") patchMessage(TEAM_KEY, reply.id, (m) => ({ ...m, meta: { ...m.meta, notice: String(data.message) } }));
-          else if (event === "done") patchMessage(TEAM_KEY, reply.id, (m) => ({ ...m, meta: { ...m.meta, ...(data as object) } }));
+          else if (event === "meta" || event === "done") patchMessage(TEAM_KEY, reply.id, (m) => ({ ...m, meta: mergeMeta(m.meta, data) }));
         },
         controller.signal,
       );
@@ -279,7 +302,11 @@ export function App() {
       <main className="chat">
         {!catalog.configured ? (
           <p className="banner">
-            This site may not have Claude API access yet. The owner adds <code>ANTHROPIC_API_KEY</code> in Netlify (Project configuration → Environment variables) and redeploys. Questions may fail until then.
+            This site may not have model access yet. The owner adds <code>ANTHROPIC_API_KEY</code> or <code>OPENROUTER_API_KEY</code> in Netlify (Project configuration → Environment variables) and redeploys. Questions may fail until then.
+          </p>
+        ) : !catalog.providers.openrouter && modelChoice !== "claude" ? (
+          <p className="banner">
+            OpenRouter isn't set up on this site (<code>OPENROUTER_API_KEY</code>), so Auto uses only the Claude models in the catalog.
           </p>
         ) : null}
         <section className="chat-head">
@@ -314,6 +341,10 @@ export function App() {
                   </dd>
                 </div>
                 <div>
+                  <dt>Model on Auto</dt>
+                  <dd>{autoModelText(catalog, agent.taskType)}</dd>
+                </div>
+                <div>
                   <dt>Knowledge</dt>
                   <dd>
                     <code>knowledge/{agent.id}/</code>: {agent.knowledgeFiles.length} {agent.knowledgeFiles.length === 1 ? "document" : "documents"}, plus {agent.docs.length} research{" "}
@@ -330,7 +361,7 @@ export function App() {
                 </h1>
               </div>
               <p className="team-intro">
-                {lead?.name ?? "The orchestrator"} reads your question, picks the experts and the brain each one needs, asks them in parallel, and combines their answers into one, with
+                {lead?.name ?? "The orchestrator"} reads your question, picks the experts and the model each one needs, asks them in parallel, and combines their answers into one, with
                 risks, next steps and the decisions that stay with Erich.
               </p>
             </>
@@ -356,6 +387,17 @@ export function App() {
         <Composer
           busy={isBusy}
           placeholder={agent ? `Message ${agent.name}…` : "Ask the whole team…"}
+          tools={
+            <ModelMenu
+              catalog={catalog}
+              value={modelChoice}
+              disabled={isBusy}
+              onChange={(v) => {
+                setModelChoice(v);
+                saveModelChoice(v);
+              }}
+            />
+          }
           onSend={(text) => void (agent ? askAgent(agent.id, text) : askTeam(text))}
           onStop={() => controllers.current[selected]?.abort()}
         />

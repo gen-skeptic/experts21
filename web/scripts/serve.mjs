@@ -1,5 +1,5 @@
 // Run the built app and the functions locally: http://127.0.0.1:8888 (npm run build first).
-// Needs ANTHROPIC_API_KEY in the environment for real answers; APP_PASSWORD is optional.
+// Needs ANTHROPIC_API_KEY and/or OPENROUTER_API_KEY in the environment for real answers; APP_PASSWORD is optional.
 import { createReadStream, existsSync, statSync } from "node:fs";
 import { createServer } from "node:http";
 import { extname, join, resolve, dirname } from "node:path";

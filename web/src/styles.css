@@ -182,3 +182,9 @@ a { color: var(--blue); }
   .spin, .dot { animation: none; }
   .side { transition: none; }
 }
+
+/* ------------------------------------------------------------ model menu */
+.model-menu { display: inline-flex; align-items: center; gap: 0.45rem; color: var(--quiet); font-family: var(--font-mono); font-size: 0.64rem; letter-spacing: 0.04em; text-transform: uppercase; }
+.model-menu select { max-width: min(23rem, 70vw); padding: 0.3rem 0.45rem; border: 1px solid var(--rule); border-radius: var(--radius-xs); background: var(--ink-soft); color: var(--text); font-size: 0.72rem; letter-spacing: 0; text-transform: none; }
+.model-menu select:focus { border-color: var(--blue); outline: none; }
+.model-tag { display: inline-flex; align-items: center; padding: 0.1rem 0.4rem; border: 1px solid var(--rule); border-radius: var(--radius-xs); color: var(--muted); font-family: var(--font-mono); font-size: 0.62rem; white-space: nowrap; }

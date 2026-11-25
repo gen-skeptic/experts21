@@ -17,7 +17,32 @@ export interface Agent {
   skills: string[];
   docs: string[];
   knowledgeFiles: string[];
+  taskType: string;
 }
+
+export interface ModelInfo {
+  key: string;
+  name: string;
+  maker: string;
+  input: number;
+  output: number;
+  gpqa: number;
+  tau: number;
+  taskCost: number;
+  claude: boolean;
+  note: string;
+}
+
+export interface TaskTypeInfo {
+  name: string;
+  tier: string;
+  primary: string;
+  fallback: string;
+  effort: string;
+}
+
+/** "auto", "claude" or a model key from the catalog. */
+export type ModelChoice = string;
 
 export interface Brain {
   label: string;
@@ -32,6 +57,10 @@ export interface Catalog {
   brains: Record<string, Brain>;
   orchestrator: string;
   configured: boolean;
+  providers: { claude: boolean; claudeKey: boolean; openrouter: boolean; zdr: boolean };
+  models: ModelInfo[];
+  taskTypes: TaskTypeInfo[];
+  catalogDate: string;
   passwordRequired: boolean;
   passwordOk?: boolean;
   source: string;
@@ -39,7 +68,14 @@ export interface Catalog {
 }
 
 export interface ReplyMeta {
+  /** Display name of the model, for example "Claude Sonnet 5.5". */
   model?: string;
+  modelId?: string;
+  api?: string;
+  provider?: string | null;
+  taskType?: string;
+  cost?: number | null;
+  costEstimated?: boolean;
   brain?: string;
   effort?: string;
   notice?: string;
@@ -52,6 +88,9 @@ export interface Assignment {
   name: string;
   title: string;
   question: string;
+  taskType: string;
+  model: string;
+  modelName: string;
   brain: BrainAlias;
   effort: Effort;
   reason: string;
@@ -62,7 +101,7 @@ export interface TeamMember extends Assignment {
   status: "waiting" | "streaming" | "done" | "error";
   thinking?: boolean;
   error?: string;
-  model?: string;
+  meta?: ReplyMeta;
 }
 
 export interface TeamRun {
@@ -70,6 +109,9 @@ export interface TeamRun {
   summary?: string;
   members: TeamMember[];
   routedBy?: string;
+  /** Which model made the routing plan, and what it cost. */
+  planMeta?: ReplyMeta;
+  notices?: string[];
 }
 
 export interface ChatMessage {

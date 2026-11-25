@@ -494,7 +494,7 @@ def model_catalog_md():
             "| `usage.cost` in the response | What the call cost, in USD |", "",
             "The Claude API call for the same work is `POST https://api.anthropic.com/v1/messages` with `model` set to the Claude API ID above and `output_config.effort` for effort. The web app's code is in `web/server/openrouter.ts` and `web/server/claude.ts`.", "",
             "## Privacy and routing rules", "",
-            "- **Client confidential data** goes only to the Claude API directly or to OpenRouter with zero data retention enforced. The web app enforces it by default (`OPENROUTER_ZDR`, on unless set to `false`).",
+            "- **Client confidential data** goes only to the Claude API directly or to OpenRouter with zero data retention enforced. The web app enforces it by default (`OPENROUTER_ZDR`, on unless set to `false`). Every model in the catalog had at least one zero-data-retention endpoint that supports structured outputs on " + CATALOG_DATE + ", so the default rules none of them out.",
             "- **Regulated data** (patient records, privileged legal files, anything under a BAA) goes to no model without a signed agreement that covers it. When unsure, use Claude on the Claude API and say so.",
             "- **Review with a different family** than the one that wrote the work; the QA gate's primary is Gemini for that reason.",
             "- **Recommending a model to a client** also goes through `vendor-and-tool-approval` (data terms, retention, BAA, exit path).", "",

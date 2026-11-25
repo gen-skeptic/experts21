@@ -90,6 +90,14 @@ Every skill can also be run as a slash command, without naming an expert:
 /break-even-and-cash-flow Model 2027 with three assessments a quarter and two retainers by June.
 ```
 
+```text
+/model-selection We need 40 LinkedIn post variants and a client-final SOW this week. Which model for each, through which API, and roughly what will it cost?
+```
+
+## 4. In the browser
+
+The web app (<https://dio-experts21.netlify.app>) has the same experts. Pick one in the sidebar, or **Ask the whole team**. The **Model** menu under the message box chooses who answers: **Auto** (the most cost-efficient model for the kind of work, from [model-catalog.md](model-catalog.md)), **Claude** (each expert's own brain, as here) or one model of your choice. The line under each answer shows the model and what it cost.
+
 ## Tips for good answers
 
 - **Pull first.** If you added a document on GitHub, start with "First pull the latest from main."

@@ -182,6 +182,7 @@ SOURCES = [
     ("OpenRouter benchmarks: GPQA Diamond", "https://openrouter.ai/benchmarks/gpqa-diamond"),
     ("OpenRouter benchmarks: tau2-Bench Airline", "https://openrouter.ai/benchmarks/tau2-bench-airline"),
     ("Benchmark leaderboard export, snapshot 2026-11-25 (CC BY 4.0)", "https://openrouter.ai/api/v1/datasets/exports/benchmark-leaderboard/2026-11-25.json"),
+    ("OpenRouter zero-data-retention endpoints (each catalog model has one that supports structured outputs)", "https://openrouter.ai/api/v1/endpoints/zdr"),
     ("OpenRouter API: provider routing and zero data retention", "https://openrouter.ai/docs/guides/routing/provider-selection.md"),
     ("OpenRouter API: structured outputs", "https://openrouter.ai/docs/guides/features/structured-outputs.md"),
     ("OpenRouter API: reasoning effort", "https://openrouter.ai/docs/guides/best-practices/reasoning-tokens.md"),

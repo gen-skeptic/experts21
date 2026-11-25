@@ -28,14 +28,14 @@ export function passwordOk(req: Request): boolean {
   return timingSafeEqual(a, b);
 }
 
-/** Checks shared by every model call: POST, same origin, the password, the API key, and a JSON body of sane size. */
+/** Checks shared by every model call: POST, same origin, the password, an API key, and a JSON body of sane size. */
 export async function guard(req: Request): Promise<{ body: Record<string, unknown> } | { error: Response }> {
   if (req.method !== "POST") return { error: json(405, { message: "Use POST." }, { Allow: "POST" }) };
   const origin = req.headers.get("origin");
   if (origin && origin !== new URL(req.url).origin) return { error: json(403, { message: "Cross-site requests are not allowed." }) };
   if (!passwordOk(req)) return { error: json(401, { message: "This app needs its password.", passwordRequired: true }) };
-  if (!env("ANTHROPIC_API_KEY")) {
-    return { error: json(503, { message: "No Claude API access: add ANTHROPIC_API_KEY in Netlify under Project configuration > Environment variables (or turn on Netlify's AI features), then redeploy." }) };
+  if (!env("ANTHROPIC_API_KEY") && !env("OPENROUTER_API_KEY")) {
+    return { error: json(503, { message: "No model access: add ANTHROPIC_API_KEY or OPENROUTER_API_KEY in Netlify under Project configuration > Environment variables (or turn on Netlify's AI features), then redeploy." }) };
   }
   const raw = await req.text();
   if (raw.length > 200_000) return { error: json(413, { message: "The request is too large." }) };

@@ -43,6 +43,11 @@ export function aiConfigured(): boolean {
   return env("ANTHROPIC_API_KEY") !== "" || env("NETLIFY_AI_GATEWAY_KEY") !== "";
 }
 
+/** True when a Claude API key is in the function's environment now (yours, or the one the AI Gateway injected). */
+export function claudeReady(): boolean {
+  return env("ANTHROPIC_API_KEY") !== "";
+}
+
 let client: Anthropic | null = null;
 function anthropic(): Anthropic {
   client ??= new Anthropic({
@@ -58,8 +63,8 @@ function anthropic(): Anthropic {
  * Server-side refusal fallbacks: when a safety classifier declines a request, the API re-runs it on Anthropic's
  * recommended fallback model in the same call. Opus and Sonnet support it; Haiku has no server-side fallback.
  */
-function fallbackParams(brain: WebBrain): Pick<Anthropic.Beta.MessageCreateParams, "betas" | "fallbacks"> {
-  return brain === "haiku" ? {} : { betas: ["server-side-fallback-2026-07-01"], fallbacks: "default" };
+function fallbackParams(brain: WebBrain, model: string): Pick<Anthropic.Beta.MessageCreateParams, "betas" | "fallbacks"> {
+  return brain === "haiku" || /haiku/i.test(model) ? {} : { betas: ["server-side-fallback-2026-07-01"], fallbacks: "default" };
 }
 
 export function errorMessage(error: unknown): string {
@@ -72,10 +77,26 @@ export function errorMessage(error: unknown): string {
   return error instanceof Error ? error.message : "The request failed.";
 }
 
+export interface Usage {
+  input: number;
+  output: number;
+  cacheRead: number;
+  cacheWrite: number;
+}
+
 export interface ReplyResult {
   model: string;
   stopReason: string | null;
   cutOff: boolean;
+  usage: Usage;
+}
+
+function addUsage(total: Usage, u: { input_tokens?: number | null; output_tokens?: number | null; cache_read_input_tokens?: number | null; cache_creation_input_tokens?: number | null } | null | undefined) {
+  if (!u) return;
+  if (u.input_tokens != null) total.input = u.input_tokens;
+  if (u.output_tokens != null) total.output = u.output_tokens;
+  if (u.cache_read_input_tokens != null) total.cacheRead = u.cache_read_input_tokens;
+  if (u.cache_creation_input_tokens != null) total.cacheWrite = u.cache_creation_input_tokens;
 }
 
 /**
@@ -86,6 +107,8 @@ export async function streamReply(options: {
   system: Anthropic.Beta.BetaTextBlockParam[];
   messages: Anthropic.Beta.BetaMessageParam[];
   brain: string;
+  /** A Claude API model ID; defaults to the brain's model. */
+  model?: string;
   effort: Effort;
   maxTokens: number;
   deadline: number;
@@ -94,7 +117,7 @@ export async function streamReply(options: {
   onThinking?: () => void;
 }): Promise<ReplyResult> {
   const brain = webBrain(options.brain);
-  const model = modelFor(brain);
+  const model = options.model || modelFor(brain);
   const controller = new AbortController();
   const stop = () => controller.abort();
   options.signal.addEventListener("abort", stop);
@@ -103,7 +126,7 @@ export async function streamReply(options: {
     cutOff = true;
     controller.abort();
   }, Math.max(1_000, options.deadline - Date.now()));
-  const result: ReplyResult = { model, stopReason: null, cutOff: false };
+  const result: ReplyResult = { model, stopReason: null, cutOff: false, usage: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 } };
   try {
     const stream = anthropic().beta.messages.stream(
       {
@@ -112,15 +135,18 @@ export async function streamReply(options: {
         system: options.system,
         messages: options.messages,
         output_config: { effort: options.effort },
-        ...fallbackParams(brain),
+        ...fallbackParams(brain, model),
       },
       { signal: controller.signal },
     );
     for await (const event of stream) {
-      if (event.type === "message_start") result.model = event.message.model;
+      if (event.type === "message_start") {
+        result.model = event.message.model;
+        addUsage(result.usage, event.message.usage);
+      } else if (event.type === "message_delta") addUsage(result.usage, event.usage);
       else if (event.type === "content_block_start" && event.content_block.type === "thinking") options.onThinking?.();
       else if (event.type === "content_block_delta" && event.delta.type === "text_delta") options.onText(event.delta.text);
-      else if (event.type === "message_delta" && event.delta.stop_reason) result.stopReason = event.delta.stop_reason;
+      if (event.type === "message_delta" && event.delta.stop_reason) result.stopReason = event.delta.stop_reason;
     }
   } catch (error) {
     if (!(error instanceof Anthropic.APIUserAbortError) && !controller.signal.aborted) throw error;
@@ -137,28 +163,33 @@ export async function structuredReply(options: {
   system: Anthropic.Beta.BetaTextBlockParam[];
   messages: Anthropic.Beta.BetaMessageParam[];
   brain: string;
+  /** A Claude API model ID; defaults to the brain's model. */
+  model?: string;
   effort: Effort;
   schema: Record<string, unknown>;
   maxTokens: number;
   signal: AbortSignal;
-}): Promise<{ model: string; value: unknown }> {
+}): Promise<{ model: string; value: unknown; usage: Usage }> {
   const brain = webBrain(options.brain);
+  const model = options.model || modelFor(brain);
   const response = await anthropic().beta.messages.create(
     {
-      model: modelFor(brain),
+      model,
       max_tokens: options.maxTokens,
       system: options.system,
       messages: options.messages,
       output_config: { effort: options.effort, format: { type: "json_schema", schema: options.schema } },
-      ...fallbackParams(brain),
+      ...fallbackParams(brain, model),
     },
     { signal: options.signal, timeout: 50_000 },
   );
-  if (response.stop_reason === "refusal") return { model: response.model, value: null };
+  const usage: Usage = { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 };
+  addUsage(usage, response.usage);
+  if (response.stop_reason === "refusal") return { model: response.model, value: null, usage };
   const text = response.content.map((block) => (block.type === "text" ? block.text : "")).join("");
   try {
-    return { model: response.model, value: JSON.parse(text) };
+    return { model: response.model, value: JSON.parse(text), usage };
   } catch {
-    return { model: response.model, value: null };
+    return { model: response.model, value: null, usage };
   }
 }
