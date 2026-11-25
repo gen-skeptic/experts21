@@ -10,6 +10,7 @@ The expert team is data. These files define it, and `build.py` turns them into t
 | [`workflows.py`](workflows.py) | Who does each step of the team workflows shown at the end of the process skills |
 | [`brains.py`](brains.py) | The four brains (model families) and the work task types that pick one |
 | [`build.py`](build.py) | The generator and its check |
+| [`export_skill.py`](export_skill.py) | Packages one agent as a standalone Claude skill zip in `exports/` |
 
 ## Build
 
