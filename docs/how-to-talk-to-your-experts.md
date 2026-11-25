@@ -1,6 +1,6 @@
 # How to talk to your experts
 
-The team lives in this repository: 50 expert agents in `.claude/agents/` and the skills they share in `.claude/skills/`. Open the repository in Claude Code (claude.ai/code, or the `claude` command in a terminal on the laptop) and talk to them in three ways.
+The team lives in this repository: 50 expert agents in `.claude/agents/` and the skills they share in `.claude/skills/`. Each one has a Star Trek name and personality: Picard (`orchestrator`) runs the team, Cogley (`business-attorney`) reads every clause, Seven (`lean-six-sigma-lead`) won't automate waste, Odo (`quality-reviewer`) lets nothing past; the full list is in [agent-brains.md](agent-brains.md). Open the repository in Claude Code (claude.ai/code, or the `claude` command in a terminal on the laptop) and talk to them in three ways.
 
 ## 1. Ask one expert
 

@@ -6,112 +6,114 @@ The experts a consultant would want around the table to plan, open and run **Dau
 
 Two agents run the team itself: **`orchestrator`** takes any question, brings in the right experts and returns one combined answer; **`agent-builder`** creates new agents and skills and improves existing ones.
 
+Every agent's Star Trek name, voice, working style and brain are in [agent-brains.md](agent-brains.md).
+
 ## The experts
 
 ### Leadership and coordination
 
-| # | Agent | Role | Job (one line) | Skills |
-| -: | --- | --- | --- | --- |
-| 1 | `orchestrator` | Orchestrator (CEO agent) | Takes any question, decides which experts to bring in, has them work in parallel and returns one combined answer; runs the firm day to day for Erich. | `routing-plan`, `decision-memo`, `operating-cadence`, `red-team-review`, `employer-boundary-screen`, `continuous-improvement` |
-| 2 | `chief-of-staff` | Chief of Staff (routing and cadence) | Turns cross-functional requests into routing plans and runs the weekly, monthly and quarterly operating rhythm. | `routing-plan`, `operating-cadence`, `decision-memo`, `project-plan-and-status` |
-| 3 | `advisory-board` | Advisory Board (strategy sounding board) | Pressure-tests big decisions (pricing, hires, the full-time move) from several perspectives before money is committed. | `red-team-review`, `decision-memo`, `break-even-and-cash-flow`, `research-and-fact-check` |
-| 4 | `cto-principal-architect` | CTO and Principal Architect | Sets the technical standard, reference architectures and approved stack, and owns architecture decisions. | `architecture-decision-record`, `threat-model`, `governed-agent-design`, `private-ai-platform`, `vendor-and-tool-approval`, `decision-memo` |
-| 5 | `operations-finance-manager` | Operations and Finance Manager | Runs budgets, cash flow, the rate card, vendors and the monthly close so growth stays profitable. | `break-even-and-cash-flow`, `monthly-finance-close`, `pricing-and-estimating`, `risk-register`, `vendor-and-tool-approval`, `operating-cadence` |
+| # | Agent | Name | Role | Job (one line) | Skills |
+| -: | --- | --- | --- | --- | --- |
+| 1 | `orchestrator` | Picard | Orchestrator (CEO agent) | Takes any question, decides which experts to bring in, has them work in parallel and returns one combined answer; runs the firm day to day for Erich. | `routing-plan`, `decision-memo`, `operating-cadence`, `red-team-review`, `employer-boundary-screen`, `continuous-improvement` |
+| 2 | `chief-of-staff` | Riker | Chief of Staff (routing and cadence) | Turns cross-functional requests into routing plans and runs the weekly, monthly and quarterly operating rhythm. | `routing-plan`, `operating-cadence`, `decision-memo`, `project-plan-and-status` |
+| 3 | `advisory-board` | Guinan | Advisory Board (strategy sounding board) | Pressure-tests big decisions (pricing, hires, the full-time move) from several perspectives before money is committed. | `red-team-review`, `decision-memo`, `break-even-and-cash-flow`, `research-and-fact-check` |
+| 4 | `cto-principal-architect` | Spock | CTO and Principal Architect | Sets the technical standard, reference architectures and approved stack, and owns architecture decisions. | `architecture-decision-record`, `threat-model`, `governed-agent-design`, `private-ai-platform`, `vendor-and-tool-approval`, `decision-memo` |
+| 5 | `operations-finance-manager` | Sisko | Operations and Finance Manager | Runs budgets, cash flow, the rate card, vendors and the monthly close so growth stays profitable. | `break-even-and-cash-flow`, `monthly-finance-close`, `pricing-and-estimating`, `risk-register`, `vendor-and-tool-approval`, `operating-cadence` |
 
 ### Team builder
 
-| # | Agent | Role | Job (one line) | Skills |
-| -: | --- | --- | --- | --- |
-| 6 | `agent-builder` | Agent Builder (meta agent) | Creates new agents and skills and improves existing ones, following the official Claude Code docs and this repository's patterns. | `agent-and-skill-authoring`, `qa-review`, `research-and-fact-check` |
+| # | Agent | Name | Role | Job (one line) | Skills |
+| -: | --- | --- | --- | --- | --- |
+| 6 | `agent-builder` | Soong | Agent Builder (meta agent) | Creates new agents and skills and improves existing ones, following the official Claude Code docs and this repository's patterns. | `agent-and-skill-authoring`, `qa-review`, `research-and-fact-check` |
 
 ### Advisors
 
-| # | Agent | Role | Job (one line) | Skills |
-| -: | --- | --- | --- | --- |
-| 7 | `business-attorney` | Business Attorney (legal advisor) | Drafts and reviews contracts (MSA, SOW, NDA, DPA, BAA), Florida business law and AI and privacy rules, for review by a licensed attorney. | `contract-review`, `florida-business-compliance`, `employer-boundary-screen`, `proposal-and-sow`, `partner-vetting` |
-| 8 | `cpa-bookkeeper` | CPA and Bookkeeper (finance and tax advisor) | Keeps the books, the tax calendar and sales-tax questions straight, flagging what needs a licensed CPA. | `monthly-finance-close`, `florida-business-compliance`, `break-even-and-cash-flow` |
-| 9 | `insurance-risk-advisor` | Insurance and Risk Advisor | Sizes E&O, cyber and other coverage, keeps the risk register and checks contract insurance clauses. | `risk-register`, `contract-review`, `florida-business-compliance`, `red-team-review` |
+| # | Agent | Name | Role | Job (one line) | Skills |
+| -: | --- | --- | --- | --- | --- |
+| 7 | `business-attorney` | Cogley | Business Attorney (legal advisor) | Drafts and reviews contracts (MSA, SOW, NDA, DPA, BAA), Florida business law and AI and privacy rules, for review by a licensed attorney. | `contract-review`, `florida-business-compliance`, `employer-boundary-screen`, `proposal-and-sow`, `partner-vetting` |
+| 8 | `cpa-bookkeeper` | Tuvok | CPA and Bookkeeper (finance and tax advisor) | Keeps the books, the tax calendar and sales-tax questions straight, flagging what needs a licensed CPA. | `monthly-finance-close`, `florida-business-compliance`, `break-even-and-cash-flow` |
+| 9 | `insurance-risk-advisor` | Saru | Insurance and Risk Advisor | Sizes E&O, cyber and other coverage, keeps the risk register and checks contract insurance clauses. | `risk-register`, `contract-review`, `florida-business-compliance`, `red-team-review` |
 
 ### Quality
 
-| # | Agent | Role | Job (one line) | Skills |
-| -: | --- | --- | --- | --- |
-| 10 | `quality-reviewer` | Quality Reviewer (QA gate) | The independent QA gate: checks every deliverable for correctness, evidence, security, privacy and brand. | `qa-review`, `research-and-fact-check`, `red-team-review`, `dautel-brand` |
+| # | Agent | Name | Role | Job (one line) | Skills |
+| -: | --- | --- | --- | --- | --- |
+| 10 | `quality-reviewer` | Odo | Quality Reviewer (QA gate) | The independent QA gate: checks every deliverable for correctness, evidence, security, privacy and brand. | `qa-review`, `research-and-fact-check`, `red-team-review`, `dautel-brand` |
 
 ### Process improvement
 
-| # | Agent | Role | Job (one line) | Skills |
-| -: | --- | --- | --- | --- |
-| 11 | `lean-six-sigma-lead` | Lean Six Sigma Lead (process improvement) | Makes sure no broken process gets automated: health checks, Kaizen events and DMAIC projects. | `process-health-check`, `kaizen-event`, `dmaic-project`, `readiness-assessment`, `continuous-improvement`, `workshop-design` |
-| 12 | `process-data-analyst` | Process Data Analyst (Six Sigma statistics) | Proves with statistics whether a process is stable, capable and actually improved. | `statistical-analysis`, `dmaic-project`, `process-health-check` |
-| 13 | `continuous-improvement-coordinator` | Continuous Improvement Coordinator (and manual maintainer) | Collects improvement ideas, runs the monthly PDCA cycle and keeps the team's standards current. | `continuous-improvement`, `kaizen-event`, `operating-cadence` |
+| # | Agent | Name | Role | Job (one line) | Skills |
+| -: | --- | --- | --- | --- | --- |
+| 11 | `lean-six-sigma-lead` | Seven | Lean Six Sigma Lead (process improvement) | Makes sure no broken process gets automated: health checks, Kaizen events and DMAIC projects. | `process-health-check`, `kaizen-event`, `dmaic-project`, `readiness-assessment`, `continuous-improvement`, `workshop-design` |
+| 12 | `process-data-analyst` | Bashir | Process Data Analyst (Six Sigma statistics) | Proves with statistics whether a process is stable, capable and actually improved. | `statistical-analysis`, `dmaic-project`, `process-health-check` |
+| 13 | `continuous-improvement-coordinator` | Rom | Continuous Improvement Coordinator (and manual maintainer) | Collects improvement ideas, runs the monthly PDCA cycle and keeps the team's standards current. | `continuous-improvement`, `kaizen-event`, `operating-cadence` |
 
 ### Sales, clients and partners
 
-| # | Agent | Role | Job (one line) | Skills |
-| -: | --- | --- | --- | --- |
-| 14 | `client-success-manager` | Client Success and Account Manager | Keeps clients succeeding and renewing: onboarding, check-ins, quarterly reviews and support. | `account-review`, `client-onboarding`, `managed-operations`, `incident-response` |
-| 15 | `business-development` | Business Development Lead | Fills and works the sales pipeline: qualification, fit calls, proposals and closing at healthy prices. | `lead-qualification`, `prospect-research`, `proposal-and-sow`, `pricing-and-estimating`, `employer-boundary-screen` |
-| 16 | `partner-ecosystem-manager` | Partner Ecosystem Manager | Builds referral and white-label channels with local MSPs, agencies and vendors. | `partner-vetting`, `lead-qualification`, `employer-boundary-screen` |
-| 17 | `market-research-analyst` | Market Research Analyst | Supplies current, sourced market, competitor and prospect research for every decision. | `prospect-research`, `research-and-fact-check`, `employer-boundary-screen` |
+| # | Agent | Name | Role | Job (one line) | Skills |
+| -: | --- | --- | --- | --- | --- |
+| 14 | `client-success-manager` | Troi | Client Success and Account Manager | Keeps clients succeeding and renewing: onboarding, check-ins, quarterly reviews and support. | `account-review`, `client-onboarding`, `managed-operations`, `incident-response` |
+| 15 | `business-development` | Kirk | Business Development Lead | Fills and works the sales pipeline: qualification, fit calls, proposals and closing at healthy prices. | `lead-qualification`, `prospect-research`, `proposal-and-sow`, `pricing-and-estimating`, `employer-boundary-screen` |
+| 16 | `partner-ecosystem-manager` | Sarek | Partner Ecosystem Manager | Builds referral and white-label channels with local MSPs, agencies and vendors. | `partner-vetting`, `lead-qualification`, `employer-boundary-screen` |
+| 17 | `market-research-analyst` | Dax | Market Research Analyst | Supplies current, sourced market, competitor and prospect research for every decision. | `prospect-research`, `research-and-fact-check`, `employer-boundary-screen` |
 
 ### AI and platform delivery
 
-| # | Agent | Role | Job (one line) | Skills |
-| -: | --- | --- | --- | --- |
-| 18 | `senior-agent-engineer` | Senior AI Agent Engineer | Designs and builds governed AI agents and MCP integrations that are scoped, tested and recoverable. | `governed-agent-design`, `mcp-integration`, `agent-safety-audit`, `test-plan`, `runbook`, `release-and-deployment` |
-| 19 | `platform-devops-engineer` | Platform and DevOps Engineer | Deploys and runs client platforms through GitOps, with monitoring, runbooks and tested rollback. | `release-and-deployment`, `incident-response`, `managed-operations`, `private-ai-platform`, `runbook`, `threat-model` |
-| 20 | `ai-solutions-engineer` | AI Solutions Engineer | Runs AI readiness assessments, scores automation opportunities and scopes the first workflows. | `readiness-assessment`, `process-health-check`, `governed-agent-design`, `lead-qualification`, `pricing-and-estimating` |
-| 21 | `security-compliance` | Security and Compliance Specialist | Threat-models every system, audits agent safety and keeps work compliant for healthcare, legal and finance clients. | `threat-model`, `agent-safety-audit`, `florida-business-compliance`, `vendor-and-tool-approval`, `incident-response`, `qa-review` |
-| 22 | `data-engineer` | Data Engineer | Designs the data models, pipelines and company-memory stores (PostgreSQL and pgvector) agents depend on. | `private-ai-platform`, `mcp-integration`, `architecture-decision-record`, `statistical-analysis` |
-| 23 | `delivery-lead` | Technical Project Manager / Delivery Lead | Plans and runs every engagement on scope, on time and on budget, with weekly status and a clean handover. | `project-plan-and-status`, `client-onboarding`, `release-and-deployment`, `pricing-and-estimating`, `operating-cadence` |
+| # | Agent | Name | Role | Job (one line) | Skills |
+| -: | --- | --- | --- | --- | --- |
+| 18 | `senior-agent-engineer` | Data | Senior AI Agent Engineer | Designs and builds governed AI agents and MCP integrations that are scoped, tested and recoverable. | `governed-agent-design`, `mcp-integration`, `agent-safety-audit`, `test-plan`, `runbook`, `release-and-deployment` |
+| 19 | `platform-devops-engineer` | O'Brien | Platform and DevOps Engineer | Deploys and runs client platforms through GitOps, with monitoring, runbooks and tested rollback. | `release-and-deployment`, `incident-response`, `managed-operations`, `private-ai-platform`, `runbook`, `threat-model` |
+| 20 | `ai-solutions-engineer` | The Doctor | AI Solutions Engineer | Runs AI readiness assessments, scores automation opportunities and scopes the first workflows. | `readiness-assessment`, `process-health-check`, `governed-agent-design`, `lead-qualification`, `pricing-and-estimating` |
+| 21 | `security-compliance` | Worf | Security and Compliance Specialist | Threat-models every system, audits agent safety and keeps work compliant for healthcare, legal and finance clients. | `threat-model`, `agent-safety-audit`, `florida-business-compliance`, `vendor-and-tool-approval`, `incident-response`, `qa-review` |
+| 22 | `data-engineer` | Stamets | Data Engineer | Designs the data models, pipelines and company-memory stores (PostgreSQL and pgvector) agents depend on. | `private-ai-platform`, `mcp-integration`, `architecture-decision-record`, `statistical-analysis` |
+| 23 | `delivery-lead` | Janeway | Technical Project Manager / Delivery Lead | Plans and runs every engagement on scope, on time and on budget, with weekly status and a clean handover. | `project-plan-and-status`, `client-onboarding`, `release-and-deployment`, `pricing-and-estimating`, `operating-cadence` |
 
 ### Software team
 
-| # | Agent | Role | Job (one line) | Skills |
-| -: | --- | --- | --- | --- |
-| 24 | `software-engineering-lead` | Software Engineering Lead | Leads the software team, sets the definition of done and assembles each release for DevOps. | `software-build-standards`, `project-plan-and-status`, `release-and-deployment`, `test-plan`, `pricing-and-estimating`, `hiring-kit` |
-| 25 | `software-solutions-architect` | Software Solutions Architect | Designs custom software and integrations with the simplest architecture the firm can build and operate. | `architecture-decision-record`, `requirements-and-user-stories`, `threat-model`, `mcp-integration` |
-| 26 | `business-analyst` | Business Analyst | Turns business needs into clear requirements, user stories and testable acceptance criteria. | `requirements-and-user-stories`, `process-health-check`, `readiness-assessment` |
-| 27 | `ux-ui-designer` | UX/UI Designer | Designs flows and screens that are easy to learn, fast to use and accessible (WCAG 2.1 AA). | `ux-design-review`, `dautel-brand`, `requirements-and-user-stories` |
-| 28 | `full-stack-developer` | Full-Stack Developer | Builds features end to end, from user story to tested, reviewed pull request. | `software-build-standards`, `test-plan`, `ux-design-review`, `dautel-brand` |
-| 29 | `backend-api-engineer` | Back-End and API Engineer | Builds reliable back ends, APIs and integrations that other systems and agents can depend on. | `software-build-standards`, `mcp-integration`, `threat-model`, `test-plan` |
-| 30 | `mobile-developer` | Mobile Developer | Builds mobile and offline-first PWA apps for people who work away from a desk. | `software-build-standards`, `ux-design-review`, `test-plan`, `dautel-brand` |
-| 31 | `qa-test-automation-engineer` | QA and Test Automation Engineer | Writes the test plans and automated tests that prove each release works before a client sees it. | `test-plan`, `qa-review`, `software-build-standards` |
-| 32 | `technical-writer` | Technical Writer | Writes the runbooks, user guides and release notes clients' own staff can follow. | `runbook`, `release-and-deployment`, `dautel-brand` |
+| # | Agent | Name | Role | Job (one line) | Skills |
+| -: | --- | --- | --- | --- | --- |
+| 24 | `software-engineering-lead` | Geordi | Software Engineering Lead | Leads the software team, sets the definition of done and assembles each release for DevOps. | `software-build-standards`, `project-plan-and-status`, `release-and-deployment`, `test-plan`, `pricing-and-estimating`, `hiring-kit` |
+| 25 | `software-solutions-architect` | Brahms | Software Solutions Architect | Designs custom software and integrations with the simplest architecture the firm can build and operate. | `architecture-decision-record`, `requirements-and-user-stories`, `threat-model`, `mcp-integration` |
+| 26 | `business-analyst` | Chakotay | Business Analyst | Turns business needs into clear requirements, user stories and testable acceptance criteria. | `requirements-and-user-stories`, `process-health-check`, `readiness-assessment` |
+| 27 | `ux-ui-designer` | Kes | UX/UI Designer | Designs flows and screens that are easy to learn, fast to use and accessible (WCAG 2.1 AA). | `ux-design-review`, `dautel-brand`, `requirements-and-user-stories` |
+| 28 | `full-stack-developer` | Wesley | Full-Stack Developer | Builds features end to end, from user story to tested, reviewed pull request. | `software-build-standards`, `test-plan`, `ux-design-review`, `dautel-brand` |
+| 29 | `backend-api-engineer` | Torres | Back-End and API Engineer | Builds reliable back ends, APIs and integrations that other systems and agents can depend on. | `software-build-standards`, `mcp-integration`, `threat-model`, `test-plan` |
+| 30 | `mobile-developer` | Barclay | Mobile Developer | Builds mobile and offline-first PWA apps for people who work away from a desk. | `software-build-standards`, `ux-design-review`, `test-plan`, `dautel-brand` |
+| 31 | `qa-test-automation-engineer` | T'Pol | QA and Test Automation Engineer | Writes the test plans and automated tests that prove each release works before a client sees it. | `test-plan`, `qa-review`, `software-build-standards` |
+| 32 | `technical-writer` | Jake | Technical Writer | Writes the runbooks, user guides and release notes clients' own staff can follow. | `runbook`, `release-and-deployment`, `dautel-brand` |
 
 ### Marketing and social media
 
-| # | Agent | Role | Job (one line) | Skills |
-| -: | --- | --- | --- | --- |
-| 33 | `content-marketing` | Content and Marketing Specialist (long-form) | Writes long-form content: articles, case studies, newsletters and lead magnets. | `long-form-content`, `research-and-fact-check`, `seo-audit`, `dautel-brand` |
-| 34 | `web-developer-designer` | Web Developer and Designer (DIO sites) | Builds and improves dautel.io and landing pages for clarity, speed and conversion. | `website-change`, `seo-audit`, `ux-design-review`, `dautel-brand` |
-| 35 | `marketing-director` | Marketing Director (head of marketing) | Owns the message, the marketing plan and budget, and the results of every channel. | `marketing-plan`, `marketing-metrics`, `long-form-content`, `paid-campaign`, `dautel-brand` |
-| 36 | `social-media-manager` | Social Media Manager | Runs the weekly social calendar on LinkedIn and other platforms where buyers are. | `social-media-cycle`, `marketing-metrics`, `dautel-brand` |
-| 37 | `youtube-producer` | YouTube Channel Producer | Plans and scripts the YouTube channel: series, titles, thumbnails and analytics. | `video-production`, `seo-audit`, `dautel-brand` |
-| 38 | `video-editor` | Video Editor and Short-Form Specialist | Edits recordings into tight videos and short clips with captions for every platform. | `video-production`, `social-media-cycle`, `dautel-brand` |
-| 39 | `graphic-designer` | Graphic Designer (brand and social assets) | Makes on-brand graphics, social assets, slides and thumbnails in the Dautel Design System. | `dautel-brand`, `social-media-cycle`, `video-production` |
-| 40 | `community-manager` | Community Manager | Answers, moderates and grows the firm's online community and replies. | `social-media-cycle`, `dautel-brand` |
-| 41 | `seo-specialist` | SEO Specialist | Gets the firm found in search: keyword research, technical audits and content briefs. | `seo-audit`, `website-change`, `long-form-content`, `marketing-metrics` |
-| 42 | `paid-ads-specialist` | Paid Advertising Specialist | Runs small, measured paid campaigns and stops spending the moment they stop paying back. | `paid-campaign`, `marketing-metrics`, `dautel-brand` |
-| 43 | `podcast-webinar-producer` | Podcast and Webinar Producer | Books podcast guest spots and produces webinars, then repurposes each one. | `podcast-and-webinar`, `workshop-design`, `dautel-brand` |
-| 44 | `marketing-analyst` | Marketing Analyst | Measures which marketing creates clients: metrics, attribution and honest monthly reports. | `marketing-metrics`, `statistical-analysis`, `marketing-plan`, `paid-campaign` |
+| # | Agent | Name | Role | Job (one line) | Skills |
+| -: | --- | --- | --- | --- | --- |
+| 33 | `content-marketing` | Hoshi | Content and Marketing Specialist (long-form) | Writes long-form content: articles, case studies, newsletters and lead magnets. | `long-form-content`, `research-and-fact-check`, `seo-audit`, `dautel-brand` |
+| 34 | `web-developer-designer` | Trip | Web Developer and Designer (DIO sites) | Builds and improves dautel.io and landing pages for clarity, speed and conversion. | `website-change`, `seo-audit`, `ux-design-review`, `dautel-brand` |
+| 35 | `marketing-director` | Uhura | Marketing Director (head of marketing) | Owns the message, the marketing plan and budget, and the results of every channel. | `marketing-plan`, `marketing-metrics`, `long-form-content`, `paid-campaign`, `dautel-brand` |
+| 36 | `social-media-manager` | Tilly | Social Media Manager | Runs the weekly social calendar on LinkedIn and other platforms where buyers are. | `social-media-cycle`, `marketing-metrics`, `dautel-brand` |
+| 37 | `youtube-producer` | Paris | YouTube Channel Producer | Plans and scripts the YouTube channel: series, titles, thumbnails and analytics. | `video-production`, `seo-audit`, `dautel-brand` |
+| 38 | `video-editor` | Harry | Video Editor and Short-Form Specialist | Edits recordings into tight videos and short clips with captions for every platform. | `video-production`, `social-media-cycle`, `dautel-brand` |
+| 39 | `graphic-designer` | Garak | Graphic Designer (brand and social assets) | Makes on-brand graphics, social assets, slides and thumbnails in the Dautel Design System. | `dautel-brand`, `social-media-cycle`, `video-production` |
+| 40 | `community-manager` | Neelix | Community Manager | Answers, moderates and grows the firm's online community and replies. | `social-media-cycle`, `dautel-brand` |
+| 41 | `seo-specialist` | Chekov | SEO Specialist | Gets the firm found in search: keyword research, technical audits and content briefs. | `seo-audit`, `website-change`, `long-form-content`, `marketing-metrics` |
+| 42 | `paid-ads-specialist` | Quark | Paid Advertising Specialist | Runs small, measured paid campaigns and stops spending the moment they stop paying back. | `paid-campaign`, `marketing-metrics`, `dautel-brand` |
+| 43 | `podcast-webinar-producer` | Vic | Podcast and Webinar Producer | Books podcast guest spots and produces webinars, then repurposes each one. | `podcast-and-webinar`, `workshop-design`, `dautel-brand` |
+| 44 | `marketing-analyst` | Ro | Marketing Analyst | Measures which marketing creates clients: metrics, attribution and honest monthly reports. | `marketing-metrics`, `statistical-analysis`, `marketing-plan`, `paid-campaign` |
 
 ### Company operations, products and training
 
-| # | Agent | Role | Job (one line) | Skills |
-| -: | --- | --- | --- | --- |
-| 45 | `operations-coordinator` | Operations Coordinator (virtual assistant) | Handles scheduling, renewals, filings, vendor lists and the routine admin that eats Erich's hours. | `monthly-finance-close`, `florida-business-compliance`, `client-onboarding`, `vendor-and-tool-approval`, `operating-cadence` |
-| 46 | `trainer-curriculum` | Trainer and Curriculum Developer | Designs workshops, courses and coaching on AI agents and Lean methods for clients and the community. | `workshop-design`, `podcast-and-webinar`, `product-offer-design`, `dautel-brand` |
-| 47 | `product-manager` | Product Manager | Turns repeated client needs into productized offers and decides the roadmap from evidence. | `product-offer-design`, `pricing-and-estimating`, `requirements-and-user-stories`, `marketing-plan`, `break-even-and-cash-flow` |
-| 48 | `talent-people-partner` | Talent and People Partner | Plans hires, writes job descriptions and interview kits, and runs onboarding and offboarding. | `hiring-kit`, `florida-business-compliance` |
+| # | Agent | Name | Role | Job (one line) | Skills |
+| -: | --- | --- | --- | --- | --- |
+| 45 | `operations-coordinator` | Nog | Operations Coordinator (virtual assistant) | Handles scheduling, renewals, filings, vendor lists and the routine admin that eats Erich's hours. | `monthly-finance-close`, `florida-business-compliance`, `client-onboarding`, `vendor-and-tool-approval`, `operating-cadence` |
+| 46 | `trainer-curriculum` | Pike | Trainer and Curriculum Developer | Designs workshops, courses and coaching on AI agents and Lean methods for clients and the community. | `workshop-design`, `podcast-and-webinar`, `product-offer-design`, `dautel-brand` |
+| 47 | `product-manager` | Burnham | Product Manager | Turns repeated client needs into productized offers and decides the roadmap from evidence. | `product-offer-design`, `pricing-and-estimating`, `requirements-and-user-stories`, `marketing-plan`, `break-even-and-cash-flow` |
+| 48 | `talent-people-partner` | Beverly | Talent and People Partner | Plans hires, writes job descriptions and interview kits, and runs onboarding and offboarding. | `hiring-kit`, `florida-business-compliance` |
 
 ### Utility vertical (phase 2)
 
-| # | Agent | Role | Job (one line) | Skills |
-| -: | --- | --- | --- | --- |
-| 49 | `gis-remote-sensing-analyst` | GIS and Remote-Sensing Analyst | Phase 2: turns LiDAR, imagery and drone data into field decisions for utility and vegetation work. | `utility-field-ops`, `employer-boundary-screen`, `statistical-analysis` |
-| 50 | `utility-industry-advisor` | Utility Industry Advisor (fractional) | Phase 2: advises on the utility and field-operations market once the employer boundary allows it. | `utility-field-ops`, `employer-boundary-screen`, `red-team-review` |
+| # | Agent | Name | Role | Job (one line) | Skills |
+| -: | --- | --- | --- | --- | --- |
+| 49 | `gis-remote-sensing-analyst` | Sulu | GIS and Remote-Sensing Analyst | Phase 2: turns LiDAR, imagery and drone data into field decisions for utility and vegetation work. | `utility-field-ops`, `employer-boundary-screen`, `statistical-analysis` |
+| 50 | `utility-industry-advisor` | Scotty | Utility Industry Advisor (fractional) | Phase 2: advises on the utility and field-operations market once the employer boundary allows it. | `utility-field-ops`, `employer-boundary-screen`, `red-team-review` |
 
 ## Who reports to whom
 

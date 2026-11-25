@@ -396,7 +396,7 @@ def agent_brains():
 
 def knowledge_readme(agent):
     aid = agent["id"]
-    deliver = "; ".join(d[0].lower() + d[1:] for d in agent["deliverables"])
+    deliver = "; ".join(d[0].lower() + d[1:] if d[1:2].islower() else d for d in agent["deliverables"])
     out = [f"# Knowledge folder: {agent['name']} (`{aid}`)", "",
            f"Reference documents for DIO's {agent['title']}. [`{aid}`](../../.claude/agents/{aid}.md) reads this folder before it answers or starts any task, and uses what is here ahead of general knowledge.", "",
            "## What belongs here", ""]
@@ -503,7 +503,7 @@ def outputs(personas):
     return files
 
 
-PERSONAS = False
+PERSONAS = True  # names, brains and knowledge folders; False builds the team without them
 
 
 def main():

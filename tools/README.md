@@ -21,7 +21,7 @@ python3 tools/build.py
 python3 tools/build.py --check
 ```
 
-The build writes `.claude/agents/<agent>.md`, `.claude/skills/<skill>/SKILL.md`, `docs/expert-roster.md` and the team table in `CLAUDE.md`, and removes agent or skill files that are no longer defined. `--check` fails if any of them is missing, stale or edited by hand. It needs only Python 3 (standard library).
+The build writes `.claude/agents/<agent>.md`, `.claude/skills/<skill>/SKILL.md`, `docs/expert-roster.md`, `docs/agent-brains.md`, `knowledge/README.md` and each `knowledge/<agent>/README.md`, and the team table in `CLAUDE.md`, and removes agent or skill files that are no longer defined. `--check` fails if any of them is missing, stale or edited by hand. It needs only Python 3 (standard library).
 
 ## Where the data came from
 
