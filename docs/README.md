@@ -23,3 +23,9 @@ This folder is the shared library for the expert agents in [`.claude/agents/`](.
 | 11 | [Biggest risks](11-risks.md) | Risks and mitigations, with November 2026 updates *(updated)* |
 | 12 | [90-day plan and open questions](12-90-day-plan-and-open-questions.md) | First 90 days, questions for the founder, reference list |
 | — | [Local prospects](local-prospects.md) | Prospect method, local market size and the ranking of segments within 10 miles of Boynton Beach (named businesses kept in the private repository) |
+
+## The team built on this research
+
+| File | What it is |
+| --- | --- |
+| [expert-roster.md](expert-roster.md) | The experts the firm needs, one line each, who reports to whom, and the skills they share |
