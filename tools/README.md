@@ -9,6 +9,8 @@ The expert team is data. These files define it, and `build.py` turns them into t
 | `skills_strategy.py`, `skills_delivery.py`, `skills_business.py`, `skills_marketing.py` | Each skill's title, one-line summary, description (when to use it) and method |
 | [`workflows.py`](workflows.py) | Who does each step of the team workflows shown at the end of the process skills |
 | [`brains.py`](brains.py) | The four brains (model families) and the work task types that pick one |
+| [`models.py`](models.py) | The model catalog: the most cost-efficient model per task type across Claude and OpenRouter, each model's IDs, prices and benchmark scores, and each agent's usual task type |
+| [`refresh_models.py`](refresh_models.py) | Read-only: downloads OpenRouter's live model list and benchmark data and prints the ranking per tier, to update `models.py` every quarter |
 | [`build.py`](build.py) | The generator and its check |
 | [`export_skill.py`](export_skill.py) | Packages one agent as a standalone Claude skill zip in `exports/` |
 
@@ -22,7 +24,7 @@ python3 tools/build.py
 python3 tools/build.py --check
 ```
 
-The build writes `.claude/agents/<agent>.md`, `.claude/skills/<skill>/SKILL.md`, `docs/expert-roster.md`, `docs/agent-brains.md`, `knowledge/README.md` and each `knowledge/<agent>/README.md`, and the team table in `CLAUDE.md`, and removes agent or skill files that are no longer defined. `--check` fails if any of them is missing, stale or edited by hand. It needs only Python 3 (standard library).
+The build writes `.claude/agents/<agent>.md`, `.claude/skills/<skill>/SKILL.md`, `docs/expert-roster.md`, `docs/agent-brains.md`, `docs/model-catalog.md` and `docs/model-catalog.json`, `knowledge/README.md` and each `knowledge/<agent>/README.md`, and the team table in `CLAUDE.md`, and removes agent or skill files that are no longer defined. `--check` fails if any of them is missing, stale or edited by hand. It needs only Python 3 (standard library).
 
 ## Where the data came from
 

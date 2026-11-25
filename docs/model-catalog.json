@@ -1,0 +1,469 @@
+{
+  "date": "2026-11-25",
+  "sources": [
+    {
+      "label": "OpenRouter model list (prices, context, parameters)",
+      "url": "https://openrouter.ai/api/v1/models"
+    },
+    {
+      "label": "OpenRouter benchmarks: GPQA Diamond",
+      "url": "https://openrouter.ai/benchmarks/gpqa-diamond"
+    },
+    {
+      "label": "OpenRouter benchmarks: tau2-Bench Airline",
+      "url": "https://openrouter.ai/benchmarks/tau2-bench-airline"
+    },
+    {
+      "label": "Benchmark leaderboard export, snapshot 2026-11-25 (CC BY 4.0)",
+      "url": "https://openrouter.ai/api/v1/datasets/exports/benchmark-leaderboard/2026-11-25.json"
+    },
+    {
+      "label": "OpenRouter API: provider routing and zero data retention",
+      "url": "https://openrouter.ai/docs/guides/routing/provider-selection.md"
+    },
+    {
+      "label": "OpenRouter API: structured outputs",
+      "url": "https://openrouter.ai/docs/guides/features/structured-outputs.md"
+    },
+    {
+      "label": "OpenRouter API: reasoning effort",
+      "url": "https://openrouter.ai/docs/guides/best-practices/reasoning-tokens.md"
+    }
+  ],
+  "tiers": {
+    "deep": {
+      "label": "Deep",
+      "gpqa": 0.925,
+      "tau": 0.75,
+      "why": "Judgment where a mistake is expensive"
+    },
+    "reasoning": {
+      "label": "Reasoning",
+      "gpqa": 0.93,
+      "tau": 0.0,
+      "why": "Math, statistics and science-style reasoning; tool use not needed"
+    },
+    "standard": {
+      "label": "Standard",
+      "gpqa": 0.89,
+      "tau": 0.74,
+      "why": "Everyday specialist work that a review step checks"
+    },
+    "fast": {
+      "label": "Fast",
+      "gpqa": 0.86,
+      "tau": 0.68,
+      "why": "High-volume, well-defined work"
+    },
+    "frontier": {
+      "label": "Frontier",
+      "gpqa": 0.96,
+      "tau": 0.78,
+      "why": "The hardest problems only; best quality regardless of price"
+    }
+  },
+  "models": {
+    "claude-sonnet-5.5": {
+      "name": "Claude Sonnet 5.5",
+      "maker": "Anthropic",
+      "openrouter": "anthropic/claude-sonnet-5.5",
+      "anthropic": "claude-sonnet-5-5",
+      "input": 2.0,
+      "output": 10.0,
+      "cache_read": 0.1,
+      "context": 1000000,
+      "gpqa": 0.93,
+      "gpqa_cost": 0.0261,
+      "gpqa_s": 19,
+      "tau": 0.778,
+      "tau_cost": 0.1801,
+      "tau_s": 65,
+      "efforts": [
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max"
+      ],
+      "note": "Cheapest and fastest model that meets the Deep floor; beats Claude Opus 5.5 on both benchmarks at half the price.",
+      "task_cost": 0.2062
+    },
+    "gemini-3.7-flash": {
+      "name": "Gemini 3.7 Flash",
+      "maker": "Google",
+      "openrouter": "google/gemini-3.7-flash",
+      "anthropic": null,
+      "input": 0.75,
+      "output": 3.75,
+      "cache_read": 0.075,
+      "context": 1048576,
+      "gpqa": 0.945,
+      "gpqa_cost": 0.0301,
+      "gpqa_s": 61,
+      "tau": 0.772,
+      "tau_cost": 0.1856,
+      "tau_s": 213,
+      "efforts": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "note": "Highest GPQA in the Deep tier at nearly the same cost as Sonnet; a different family, so a good independent reviewer. Slower.",
+      "task_cost": 0.2157
+    },
+    "gpt-6.1-sol": {
+      "name": "GPT-6.1 Sol",
+      "maker": "OpenAI",
+      "openrouter": "openai/gpt-6.1-sol",
+      "anthropic": null,
+      "input": 2.0,
+      "output": 10.0,
+      "cache_read": 0.1,
+      "context": 1050000,
+      "gpqa": 0.938,
+      "gpqa_cost": 0.0221,
+      "gpqa_s": 33,
+      "tau": 0.683,
+      "tau_cost": 0.1071,
+      "tau_s": 135,
+      "efforts": [
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max"
+      ],
+      "note": "Cheapest GPQA-grade reasoning; weaker on multi-turn policy and tool use, so used for statistics and analysis only.",
+      "task_cost": 0.1292
+    },
+    "deepseek-v4.1-flash": {
+      "name": "DeepSeek V4.1 Flash",
+      "maker": "DeepSeek",
+      "openrouter": "deepseek/deepseek-v4.1-flash-1017",
+      "anthropic": null,
+      "input": 0.15,
+      "output": 0.6,
+      "cache_read": 0.003,
+      "context": 1048576,
+      "gpqa": 0.906,
+      "gpqa_cost": 0.0084,
+      "gpqa_s": 84,
+      "tau": 0.754,
+      "tau_cost": 0.026,
+      "tau_s": 76,
+      "efforts": [
+        "none",
+        "low",
+        "high",
+        "max"
+      ],
+      "note": "About one-sixth of Sonnet's cost per task for Standard-tier quality; open weights served by many providers.",
+      "task_cost": 0.0344
+    },
+    "gpt-6-luna": {
+      "name": "GPT-6 Luna",
+      "maker": "OpenAI",
+      "openrouter": "openai/gpt-6-luna",
+      "anthropic": null,
+      "input": 0.1,
+      "output": 0.5,
+      "cache_read": 0.01,
+      "context": 1050000,
+      "gpqa": 0.878,
+      "gpqa_cost": 0.0029,
+      "gpqa_s": 92,
+      "tau": 0.684,
+      "tau_cost": 0.0087,
+      "tau_s": 302,
+      "efforts": [
+        "none",
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max"
+      ],
+      "note": "The cheapest model that meets the Fast floor; best for short, single-turn writing.",
+      "task_cost": 0.0116
+    },
+    "claude-haiku-5.5": {
+      "name": "Claude Haiku 5.5",
+      "maker": "Anthropic",
+      "openrouter": "anthropic/claude-haiku-5.5",
+      "anthropic": "claude-haiku-5-5",
+      "input": 0.1,
+      "output": 0.5,
+      "cache_read": 0.01,
+      "context": 1000000,
+      "gpqa": 0.868,
+      "gpqa_cost": 0.0043,
+      "gpqa_s": 36,
+      "tau": 0.735,
+      "tau_cost": 0.013,
+      "tau_s": 73,
+      "efforts": [
+        "none",
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max"
+      ],
+      "note": "Nearly as cheap as GPT-6 Luna, faster, and better at following procedures over several turns.",
+      "task_cost": 0.0173
+    },
+    "gemini-4-argon": {
+      "name": "Gemini 4 Argon",
+      "maker": "Google",
+      "openrouter": "google/gemini-4-argon",
+      "anthropic": null,
+      "input": 2.0,
+      "output": 10.0,
+      "cache_read": 0.1,
+      "context": 1048576,
+      "gpqa": 0.965,
+      "gpqa_cost": 0.0947,
+      "gpqa_s": 102,
+      "tau": 0.787,
+      "tau_cost": 0.4983,
+      "tau_s": 348,
+      "efforts": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "note": "Top score on both benchmarks; about three times the cost of Sonnet per task, and slow. Escalation only.",
+      "task_cost": 0.593
+    },
+    "claude-opus-5.5": {
+      "name": "Claude Opus 5.5",
+      "maker": "Anthropic",
+      "openrouter": "anthropic/claude-opus-5.5",
+      "anthropic": "claude-opus-5-5",
+      "input": 4.0,
+      "output": 20.0,
+      "cache_read": 0.2,
+      "context": 1000000,
+      "gpqa": 0.9,
+      "gpqa_cost": 0.0582,
+      "gpqa_s": 36,
+      "tau": 0.752,
+      "tau_cost": 0.3689,
+      "tau_s": 141,
+      "efforts": [
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max"
+      ],
+      "note": "Not the primary for any task type: Sonnet 5.5 scored higher on both benchmarks for half the price. Kept for explicit choice.",
+      "task_cost": 0.4271
+    }
+  },
+  "task_types": [
+    {
+      "name": "Strategy and high-stakes decisions",
+      "tier": "deep",
+      "primary": "claude-sonnet-5.5",
+      "fallback": "gemini-3.7-flash",
+      "effort": "medium",
+      "why": "Sonnet is the cheapest model that meets the Deep floor and the fastest; Gemini 3.7 Flash scores higher on GPQA as backup.",
+      "examples": "Decision memos, quarterly goals, the monthly report to the Chairman, offer and pricing design",
+      "claude_brain": "deep"
+    },
+    {
+      "name": "Architecture and technical design",
+      "tier": "deep",
+      "primary": "claude-sonnet-5.5",
+      "fallback": "gemini-3.7-flash",
+      "effort": "medium",
+      "why": "Design mistakes multiply; Deep floor at the lowest price.",
+      "examples": "Solution designs, architecture decision records, platform and data architecture, build-versus-buy",
+      "claude_brain": "deep"
+    },
+    {
+      "name": "Security, legal and compliance review",
+      "tier": "deep",
+      "primary": "claude-sonnet-5.5",
+      "fallback": "gemini-3.7-flash",
+      "effort": "medium",
+      "why": "Careful reading at the Deep floor; Claude runs on the Claude API directly, which keeps sensitive text off third-party routes.",
+      "examples": "Threat models, agent safety audits, contract review, risk reviews",
+      "claude_brain": "deep"
+    },
+    {
+      "name": "QA gates and fact-checks",
+      "tier": "deep",
+      "primary": "gemini-3.7-flash",
+      "fallback": "claude-sonnet-5.5",
+      "effort": "medium",
+      "why": "Highest GPQA in the Deep tier at almost Sonnet's cost, and a different model family from most of the work it reviews.",
+      "examples": "Every QA step, estimate and pricing checks, claims in published content",
+      "claude_brain": "deep"
+    },
+    {
+      "name": "Root-cause analysis and statistics",
+      "tier": "reasoning",
+      "primary": "gpt-6.1-sol",
+      "fallback": "gemini-3.7-flash",
+      "effort": "medium",
+      "why": "Cheapest model with GPQA of 0.93 or more; this work needs reasoning, not multi-turn tool use.",
+      "examples": "Incident reviews, DMAIC analysis, control charts, measurement system checks",
+      "claude_brain": "deep"
+    },
+    {
+      "name": "Software and automation build",
+      "tier": "standard",
+      "primary": "deepseek-v4.1-flash",
+      "fallback": "claude-sonnet-5.5",
+      "effort": "low",
+      "why": "Standard floor at about one-sixth of Sonnet's cost; escalate security-sensitive code to the Deep tier.",
+      "examples": "Features, APIs, agent workflows, data pipelines, tests, infrastructure as code",
+      "claude_brain": "standard"
+    },
+    {
+      "name": "Infrastructure and production changes",
+      "tier": "deep",
+      "primary": "claude-sonnet-5.5",
+      "fallback": "gemini-3.7-flash",
+      "effort": "medium",
+      "why": "Production work needs Deep-tier care; a cheaper model saves cents and risks an outage.",
+      "examples": "Deployment plans, migrations, runbooks, rollback plans",
+      "claude_brain": "standard"
+    },
+    {
+      "name": "Research and analysis",
+      "tier": "standard",
+      "primary": "deepseek-v4.1-flash",
+      "fallback": "gemini-3.7-flash",
+      "effort": "low",
+      "why": "Long-context reading at the Standard floor for a fraction of the cost; claims still go through a Deep QA gate.",
+      "examples": "Market research, competitor matrices, data analysis, financial models, vertical briefs",
+      "claude_brain": "standard"
+    },
+    {
+      "name": "Client-facing documents",
+      "tier": "deep",
+      "primary": "claude-sonnet-5.5",
+      "fallback": "gemini-3.7-flash",
+      "effort": "medium",
+      "why": "Clients read every word; Deep floor at the lowest price.",
+      "examples": "Proposals, SOWs, assessment reports, QBR decks, case studies",
+      "claude_brain": "standard"
+    },
+    {
+      "name": "Long-form content and training",
+      "tier": "standard",
+      "primary": "deepseek-v4.1-flash",
+      "fallback": "claude-haiku-5.5",
+      "effort": "low",
+      "why": "Good writing at the Standard floor; fact-checks happen at the QA step.",
+      "examples": "Articles, newsletters, scripts, curricula, workshop materials",
+      "claude_brain": "standard"
+    },
+    {
+      "name": "Planning, coordination and communication",
+      "tier": "standard",
+      "primary": "deepseek-v4.1-flash",
+      "fallback": "claude-haiku-5.5",
+      "effort": "low",
+      "why": "Clear, reliable everyday work at the lowest Standard-tier price.",
+      "examples": "Routing plans, assignments, schedules, status reports, check-ins, support replies, outreach drafts",
+      "claude_brain": "standard"
+    },
+    {
+      "name": "Short-form and high-volume content",
+      "tier": "fast",
+      "primary": "gpt-6-luna",
+      "fallback": "claude-haiku-5.5",
+      "effort": "low",
+      "why": "Many small pieces; GPT-6 Luna is the cheapest model that meets the Fast floor.",
+      "examples": "Social posts, captions, hooks, ad variants, titles and meta descriptions, thumbnail text",
+      "claude_brain": "fast"
+    },
+    {
+      "name": "Routine operations",
+      "tier": "fast",
+      "primary": "claude-haiku-5.5",
+      "fallback": "gpt-6-luna",
+      "effort": "low",
+      "why": "Templated steps that follow a procedure; Haiku is nearly as cheap as Luna, faster, and better at following procedures.",
+      "examples": "Filing records, CRM hygiene, tagging, summaries of long threads, formatting, reminders, monitoring triage",
+      "claude_brain": "fast"
+    },
+    {
+      "name": "Hardest problems (CEO escalation only)",
+      "tier": "frontier",
+      "primary": "gemini-4-argon",
+      "fallback": "claude-sonnet-5.5",
+      "effort": "medium",
+      "why": "Top score on both benchmarks; only the orchestrator assigns it, after the Deep tier has not settled the problem.",
+      "examples": "A problem the Deep brain has not settled after two passes, or a novel decision with many interacting unknowns",
+      "claude_brain": "frontier"
+    }
+  ],
+  "roles": {
+    "routing": {
+      "primary": "claude-sonnet-5.5",
+      "fallback": "gemini-3.7-flash",
+      "effort": "low",
+      "why": "The routing plan is a short structured-output judgment over a long, cached team prompt."
+    },
+    "synthesis": {
+      "task_type": "Strategy and high-stakes decisions"
+    }
+  },
+  "agent_task_type": {
+    "orchestrator": "Strategy and high-stakes decisions",
+    "chief-of-staff": "Planning, coordination and communication",
+    "advisory-board": "Strategy and high-stakes decisions",
+    "cto-principal-architect": "Architecture and technical design",
+    "operations-finance-manager": "Strategy and high-stakes decisions",
+    "agent-builder": "Architecture and technical design",
+    "business-attorney": "Security, legal and compliance review",
+    "cpa-bookkeeper": "Security, legal and compliance review",
+    "insurance-risk-advisor": "Security, legal and compliance review",
+    "quality-reviewer": "QA gates and fact-checks",
+    "lean-six-sigma-lead": "Root-cause analysis and statistics",
+    "process-data-analyst": "Root-cause analysis and statistics",
+    "continuous-improvement-coordinator": "Planning, coordination and communication",
+    "client-success-manager": "Client-facing documents",
+    "business-development": "Client-facing documents",
+    "partner-ecosystem-manager": "Planning, coordination and communication",
+    "market-research-analyst": "Research and analysis",
+    "senior-agent-engineer": "Software and automation build",
+    "platform-devops-engineer": "Infrastructure and production changes",
+    "ai-solutions-engineer": "Research and analysis",
+    "security-compliance": "Security, legal and compliance review",
+    "data-engineer": "Software and automation build",
+    "delivery-lead": "Planning, coordination and communication",
+    "software-engineering-lead": "Software and automation build",
+    "software-solutions-architect": "Architecture and technical design",
+    "business-analyst": "Research and analysis",
+    "ux-ui-designer": "Long-form content and training",
+    "full-stack-developer": "Software and automation build",
+    "backend-api-engineer": "Software and automation build",
+    "mobile-developer": "Software and automation build",
+    "qa-test-automation-engineer": "QA gates and fact-checks",
+    "technical-writer": "Long-form content and training",
+    "marketing-director": "Planning, coordination and communication",
+    "content-marketing": "Long-form content and training",
+    "web-developer-designer": "Software and automation build",
+    "social-media-manager": "Short-form and high-volume content",
+    "youtube-producer": "Long-form content and training",
+    "video-editor": "Short-form and high-volume content",
+    "graphic-designer": "Short-form and high-volume content",
+    "community-manager": "Short-form and high-volume content",
+    "seo-specialist": "Research and analysis",
+    "paid-ads-specialist": "Short-form and high-volume content",
+    "podcast-webinar-producer": "Long-form content and training",
+    "marketing-analyst": "Root-cause analysis and statistics",
+    "operations-coordinator": "Routine operations",
+    "trainer-curriculum": "Long-form content and training",
+    "product-manager": "Planning, coordination and communication",
+    "talent-people-partner": "Client-facing documents",
+    "gis-remote-sensing-analyst": "Research and analysis",
+    "utility-industry-advisor": "Research and analysis"
+  }
+}

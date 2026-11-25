@@ -1,6 +1,6 @@
 # Expert roster
 
-*Generated from `tools/team.py` and `tools/skills.py` by `tools/build.py`. 50 agents and 56 skills.*
+*Generated from `tools/team.py` and `tools/skills.py` by `tools/build.py`. 50 agents and 57 skills.*
 
 The experts a consultant would want around the table to plan, open and run **Dautel Intelligent Operations**, an AI consulting and deployment firm in Boynton Beach, Florida. They come from the research in [`docs/`](README.md) and from the team plan in the DIO operating manual (gen-skeptic/experts), which already defined 49 of these roles. Each role is built as an agent in [`.claude/agents/`](../.claude/agents/) and each skill as a reusable method in [`.claude/skills/`](../.claude/skills/), written once and shared by every agent that needs it.
 
@@ -14,11 +14,11 @@ Every agent's Star Trek name, voice, working style and brain are in [agent-brain
 
 | # | Agent | Name | Role | Job (one line) | Skills |
 | -: | --- | --- | --- | --- | --- |
-| 1 | `orchestrator` | Picard | Orchestrator (CEO agent) | Takes any question, decides which experts to bring in, has them work in parallel and returns one combined answer; runs the firm day to day for Erich. | `routing-plan`, `decision-memo`, `operating-cadence`, `red-team-review`, `employer-boundary-screen`, `continuous-improvement` |
-| 2 | `chief-of-staff` | Riker | Chief of Staff (routing and cadence) | Turns cross-functional requests into routing plans and runs the weekly, monthly and quarterly operating rhythm. | `routing-plan`, `operating-cadence`, `decision-memo`, `project-plan-and-status` |
+| 1 | `orchestrator` | Picard | Orchestrator (CEO agent) | Takes any question, decides which experts to bring in, has them work in parallel and returns one combined answer; runs the firm day to day for Erich. | `routing-plan`, `decision-memo`, `operating-cadence`, `red-team-review`, `employer-boundary-screen`, `continuous-improvement`, `model-selection` |
+| 2 | `chief-of-staff` | Riker | Chief of Staff (routing and cadence) | Turns cross-functional requests into routing plans and runs the weekly, monthly and quarterly operating rhythm. | `routing-plan`, `operating-cadence`, `decision-memo`, `project-plan-and-status`, `model-selection` |
 | 3 | `advisory-board` | Guinan | Advisory Board (strategy sounding board) | Pressure-tests big decisions (pricing, hires, the full-time move) from several perspectives before money is committed. | `red-team-review`, `decision-memo`, `break-even-and-cash-flow`, `research-and-fact-check` |
-| 4 | `cto-principal-architect` | Spock | CTO and Principal Architect | Sets the technical standard, reference architectures and approved stack, and owns architecture decisions. | `architecture-decision-record`, `threat-model`, `governed-agent-design`, `private-ai-platform`, `vendor-and-tool-approval`, `decision-memo` |
-| 5 | `operations-finance-manager` | Sisko | Operations and Finance Manager | Runs budgets, cash flow, the rate card, vendors and the monthly close so growth stays profitable. | `break-even-and-cash-flow`, `monthly-finance-close`, `pricing-and-estimating`, `risk-register`, `vendor-and-tool-approval`, `operating-cadence` |
+| 4 | `cto-principal-architect` | Spock | CTO and Principal Architect | Sets the technical standard, reference architectures and approved stack, and owns architecture decisions. | `architecture-decision-record`, `threat-model`, `governed-agent-design`, `private-ai-platform`, `vendor-and-tool-approval`, `decision-memo`, `model-selection` |
+| 5 | `operations-finance-manager` | Sisko | Operations and Finance Manager | Runs budgets, cash flow, the rate card, vendors and the monthly close so growth stays profitable. | `break-even-and-cash-flow`, `monthly-finance-close`, `pricing-and-estimating`, `risk-register`, `vendor-and-tool-approval`, `operating-cadence`, `model-selection` |
 
 ### Team builder
 
@@ -146,6 +146,7 @@ A skill is a reusable method ("review a contract", "build a break-even model"). 
 | `decision-memo` | Frame a decision with options, facts, costs, risks and a recommendation, and say who decides. | `orchestrator`, `chief-of-staff`, `advisory-board`, `cto-principal-architect` |
 | `operating-cadence` | Run the weekly priorities, the monthly report to the Chairman and quarterly planning. | `orchestrator`, `chief-of-staff`, `operations-coordinator`, `delivery-lead`, `operations-finance-manager`, `continuous-improvement-coordinator` |
 | `research-and-fact-check` | Research a question from primary sources, cite them with dates, label estimates, and check claims before they're used. | `advisory-board`, `content-marketing`, `market-research-analyst`, `quality-reviewer`, `agent-builder` |
+| `model-selection` | Pick the most cost-efficient model for each piece of work, from Claude or OpenRouter, by work task type, with privacy and fallbacks. | `orchestrator`, `chief-of-staff`, `cto-principal-architect`, `operations-finance-manager` |
 | `red-team-review` | Attack a plan before reality does: pre-mortem, strongest objections, hidden assumptions and the cheapest test. | `orchestrator`, `insurance-risk-advisor`, `advisory-board`, `utility-industry-advisor`, `quality-reviewer` |
 | `qa-review` | Review a deliverable against its standard and return PASS, PASS WITH NOTES or FAIL with itemized findings. | `security-compliance`, `qa-test-automation-engineer`, `quality-reviewer`, `agent-builder` |
 
@@ -236,6 +237,6 @@ A skill is a reusable method ("review a contract", "build a break-even model"). 
 
 ## Coverage
 
-- 50 agents in 11 groups; 56 skills in 8 categories.
+- 50 agents in 11 groups; 57 skills in 8 categories.
 - Most shared: `dautel-brand` (16 agents), `employer-boundary-screen` (7 agents), `operating-cadence` (6 agents), `pricing-and-estimating` (6 agents), `test-plan` (6 agents).
-- Every skill is used by at least one agent, and every agent uses between 2 and 6 skills.
+- Every skill is used by at least one agent, and every agent uses between 2 and 7 skills.

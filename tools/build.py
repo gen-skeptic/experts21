@@ -5,9 +5,10 @@
     python3 tools/build.py --check   fail if any generated file is missing, stale or edited by hand
 
 Inputs:  tools/team.py (agents), tools/skills.py and tools/skills_*.py (skills), tools/workflows.py (team workflows),
-         tools/brains.py (brains and task types).
+         tools/brains.py (brains and task types), tools/models.py (the model catalog).
 Outputs: .claude/agents/<agent>.md, .claude/skills/<skill>/SKILL.md, knowledge/README.md and knowledge/<agent>/README.md,
-         docs/expert-roster.md, docs/agent-brains.md and the generated team section of CLAUDE.md.
+         docs/expert-roster.md, docs/agent-brains.md, docs/model-catalog.md and .json, and the generated team section
+         of CLAUDE.md.
 Documents you add to a knowledge folder are never touched.
 """
 import json
@@ -20,6 +21,7 @@ ROOT = TOOLS.parent
 sys.path.insert(0, str(TOOLS))
 
 from brains import BRAIN_FACTS, BRAIN_ORDER, BRAINS, TASK_TYPES  # noqa: E402
+from models import AGENT_TASK, CATALOG_DATE, MODELS, ROLES, SOURCES, TASK_MODELS, TIERS  # noqa: E402
 from skills import CATEGORIES, SKILLS  # noqa: E402
 from skills_marketing import MARKETING_RULES  # noqa: E402
 from team import AGENTS, ORG_UNITS  # noqa: E402
@@ -60,6 +62,7 @@ DOC_TITLES = {
     "docs/local-prospects.md": "Local prospects",
     "docs/expert-roster.md": "Expert roster",
     "docs/agent-brains.md": "Agent brains and personalities",
+    "docs/model-catalog.md": "Model catalog: the most cost-efficient model per task type",
 }
 GROUP_DOCS = {
     "Leadership and coordination": ["01", "05", "06", "11", "12"],
@@ -81,10 +84,13 @@ AGENT_DOCS = {
     "talent-people-partner": ["08", "07"],
     "operations-coordinator": ["07", "06", "10"],
     "market-research-analyst": ["02", "03", "04", "local-prospects"],
-    "operations-finance-manager": ["06", "05", "08", "11"],
+    "operations-finance-manager": ["06", "05", "08", "11", "model-catalog"],
     "trainer-curriculum": ["05", "09", "03"],
     "product-manager": ["05", "03", "04", "06"],
-    "orchestrator": ["01", "05", "06", "11", "12", "expert-roster", "agent-brains"],
+    "orchestrator": ["01", "05", "06", "11", "12", "expert-roster", "agent-brains", "model-catalog"],
+    "chief-of-staff": ["01", "05", "06", "11", "12", "model-catalog"],
+    "cto-principal-architect": ["01", "05", "06", "11", "12", "model-catalog"],
+    "ai-solutions-engineer": ["05", "10", "07", "11", "model-catalog"],
 }
 
 
@@ -165,7 +171,7 @@ You can call the other experts with the **Agent** tool: set `subagent_type` to t
 1. **Plan** (`routing-plan`): restate the question, list the angles it needs, pick the fewest experts that cover them (usually 2 to 5), and write each one's exact question. For a simple question that one expert can answer, use that one expert.
 2. **Launch in parallel:** put every Agent call whose inputs are ready **in the same message**, so they run at the same time. Only wait when one expert needs another's output (then run that one next, with the earlier answer in its prompt).
 3. **Give each expert a complete assignment:** the original question, its part, the documents or earlier answers it needs, what a good answer must contain, and "answer your part only; the orchestrator combines the answers".
-4. **Choose the brain:** each expert has a default `model` and `effort`. Pass `model` on the Agent call only when the task type calls for a different brain (`docs/agent-brains.md`).
+4. **Choose the brain and model** (`model-selection`): name the task type of each assignment. Each expert has a default `model` and `effort`; pass `model` on the Agent call only when the task type calls for a different brain (`docs/agent-brains.md`). Where any model can run (the web app, or a client recommendation), use the most cost-efficient model for the task type from `docs/model-catalog.md`, and keep client confidential data on the Claude API or zero-data-retention routes.
 5. **Review before it leaves:** send proposals, prices, contracts, public content and code to `quality-reviewer` (and the specialist reviewer for its area) before you present them as final.
 6. **Combine** everything into one answer:
    - **Answer:** the recommendation in one or two sentences.
@@ -289,6 +295,8 @@ def skill_file(name, skill):
             outp = step["out"].replace("|", "/")
             out.append(f"| {i} | {KIND[step['kind']]} | {who_text(step['who'])} | {what} | {outp} |")
         out.append("")
+    if name == "model-selection":
+        out += model_tables(skill=True)
     out += ["## Used by", "", ", ".join(f"`{a['id']}`" for a in users) + ".", ""]
     return "\n".join(out).rstrip() + "\n"
 
@@ -382,7 +390,8 @@ def agent_brains():
             "| Task type | Examples | Brain | Effort | Why |", "| --- | --- | --- | --- | --- |"]
     for name, ex, brain, effort, why in TASK_TYPES:
         out.append(f"| {name} | {ex} | {BRAINS[brain]['label']} (`{BRAINS[brain]['alias']}`) | {effort} | {why} |")
-    out += ["", "## Every agent", "",
+    out += ["", "Where any model can run (the web app, or a model recommendation for a client), the most cost-efficient model for each task type, across Claude and OpenRouter, is in [model-catalog.md](model-catalog.md).",
+            "", "## Every agent", "",
             "| Name | Star Trek character | Agent | Role | Brain | Effort | Why this brain | Voice | Working style |",
             "| --- | --- | --- | --- | --- | --- | --- | --- | --- |"]
     for group in GROUPS:
@@ -392,6 +401,124 @@ def agent_brains():
     out += ["", "Series: " + "; ".join(f"{k} = *{v}*" for k, v in SERIES.items()) + ". "
             "The agents are AI agents named after fictional characters. They never claim to be people or the characters, and anything a client sees is written in the company voice.", ""]
     return "\n".join(out).rstrip() + "\n"
+
+
+# ---------------------------------------------------------------- model catalog
+
+TASK_INFO = {name: dict(examples=ex, brain=brain, effort=effort, why=why) for name, ex, brain, effort, why in TASK_TYPES}
+
+
+def task_cost(key):
+    m = MODELS[key]
+    return m["gpqa_cost"] + m["tau_cost"]
+
+
+def money(x):
+    return f"${x:.3f}" if x < 0.1 else f"${x:.2f}"
+
+
+def price(m):
+    return f"${m['input']:g} / ${m['output']:g}"
+
+
+def model_tables(skill=False):
+    out = [f"## The catalog ({CATALOG_DATE})" if skill else "## Model by type of work", ""]
+    if skill:
+        out += ["Generated from `tools/models.py`. Cost is the average cost of one GPQA Diamond task plus one tau2-Bench task on OpenRouter's benchmarks: a like-for-like comparison, not a quote. Full details and sources: `docs/model-catalog.md`.", ""]
+    out += ["| Task type | Tier | Primary model (OpenRouter ID) | Cost | Fallback | Effort | Claude Code brain |",
+            "| --- | --- | --- | -: | --- | --- | --- |"]
+    for task, tier, primary, fallback, effort, why in TASK_MODELS:
+        b = BRAINS[TASK_INFO[task]["brain"]]
+        pm, fm = MODELS[primary], MODELS[fallback]
+        out.append(f"| {task} | {TIERS[tier]['label']} | {pm['name']} (`{pm['openrouter']}`) | {money(task_cost(primary))} | {fm['name']} | {effort} | {b['label']} (`{b['alias']}`) |")
+    r = ROLES["routing"]
+    out += ["", f"The orchestrator's own routing plan runs on {MODELS[r[0]]['name']} (fallback {MODELS[r[1]]['name']}) at {r[2]} effort; its combined answer uses the \"{ROLES['synthesis'][0]}\" row.", ""]
+    if skill:
+        out += ["| Model | OpenRouter ID | Claude API ID | Price per M tokens (in / out) | GPQA | tau2 | Cost |",
+                "| --- | --- | --- | --- | -: | -: | -: |"]
+        for key, m in MODELS.items():
+            api = f"`{m['anthropic']}`" if m["anthropic"] else "n/a"
+            out.append(f"| {m['name']} | `{m['openrouter']}` | {api} | {price(m)} | {m['gpqa']:.3f} | {m['tau']:.3f} | {money(task_cost(key))} |")
+        out.append("")
+    return out
+
+
+def model_catalog_md():
+    out = ["# Model catalog", "",
+           f"*Generated from `tools/models.py` by `tools/build.py`. Chosen on {CATALOG_DATE} from OpenRouter's live model list and benchmark data. Prices and scores change monthly: refresh every quarter (`python3 tools/refresh_models.py`).*", "",
+           "The most cost-efficient model for each type of work, across Claude and every model on OpenRouter. The web app uses it when **Auto** is chosen; the orchestrator uses it, through the `model-selection` skill, to name a model for each assignment; and the team uses the same method when it recommends models to clients.", "",
+           "## How the models were chosen", "",
+           "1. **Two independent benchmarks** from OpenRouter, run on every model with the same harness: **GPQA Diamond** (198 graduate-level science questions: careful reasoning) and **tau2-Bench Airline** (multi-turn customer-service tasks with tools and a policy: following rules while using tools). Each gives an accuracy and an average cost and time per task.",
+           "2. **A quality floor per tier**, below. A model qualifies if it meets both floors, supports structured outputs (the routing plan needs them) and answers a GPQA task in 120 seconds or less (the web app stops an answer at about 50 seconds, so slow models fall back).",
+           "3. **The primary is the qualifying model with the lowest cost per task** (one GPQA task plus one tau2 task). The fallback is the next-best qualifying model from a different provider.",
+           "4. **Privacy and routing rules** apply on top: see the last section.", "",
+           "| Tier | GPQA floor | tau2 floor | For |", "| --- | -: | -: | --- |"]
+    for key, tier in TIERS.items():
+        out.append(f"| **{tier['label']}** | {tier['gpqa']:.3f} | {tier['tau']:.2f} | {tier['why']} |")
+    out += [""] + model_tables()
+    out += ["| Task type | Examples | Why this model |", "| --- | --- | --- |"]
+    for task, tier, primary, fallback, effort, why in TASK_MODELS:
+        out.append(f"| {task} | {TASK_INFO[task]['examples']} | {why} |")
+    out += ["", "**Escalate one tier** (Standard to Deep, Deep to Frontier) when the work involves money, production, security or legal terms and is client-final, is new to the firm, or failed a review. **Step down one tier** for routine work a review step will catch. Frontier is the orchestrator's call alone.", "",
+            "**Claude Code** subagents run on Claude only and keep the brains in [agent-brains.md](agent-brains.md). On these two benchmarks Claude Sonnet 5.5 scored higher than Claude Opus 5.5 at half the price, so moving the Deep agents from Opus to Sonnet in Claude Code would cut their cost about in half; that change is Erich's decision and has not been made.", "",
+            "## The models", "",
+            "| Model | Maker | OpenRouter ID | Claude API ID | Price per M tokens (in / out) | Context | GPQA | tau2 | Cost per task pair | Seconds per GPQA task | Reasoning efforts | Note |",
+            "| --- | --- | --- | --- | --- | -: | -: | -: | -: | -: | --- | --- |"]
+    for key, m in sorted(MODELS.items(), key=lambda kv: task_cost(kv[0])):
+        api = f"`{m['anthropic']}`" if m["anthropic"] else "n/a"
+        ctx = f"{m['context'] // 1000:,}K"
+        out.append(f"| **{m['name']}** | {m['maker']} | `{m['openrouter']}` | {api} | {price(m)} | {ctx} | {m['gpqa']:.3f} | {m['tau']:.3f} | {money(task_cost(key))} | {m['gpqa_s']} | {', '.join(m['efforts'])} | {m['note']} |")
+    out += ["", "Claude models run on the Claude API directly when `ANTHROPIC_API_KEY` is set (same price; prompt caching and Anthropic's refusal fallback), otherwise through OpenRouter.", "",
+            "## The API calls", "",
+            "OpenRouter speaks the OpenAI Chat Completions format at one endpoint for every model; the model ID picks the model. Keys stay in environment variables (`OPENROUTER_API_KEY`), never in code or this repository.", "",
+            "```bash",
+            "curl https://openrouter.ai/api/v1/chat/completions \\",
+            "  -H \"Authorization: Bearer $OPENROUTER_API_KEY\" \\",
+            "  -H \"Content-Type: application/json\" \\",
+            "  -d '{",
+            f"    \"models\": [\"{MODELS['deepseek-v4.1-flash']['openrouter']}\", \"{MODELS['claude-haiku-5.5']['openrouter']}\"],",
+            "    \"messages\": [{\"role\": \"system\", \"content\": \"You are ...\"}, {\"role\": \"user\", \"content\": \"...\"}],",
+            "    \"reasoning\": {\"effort\": \"low\"},",
+            "    \"provider\": {\"zdr\": true, \"data_collection\": \"deny\", \"require_parameters\": true},",
+            "    \"max_tokens\": 4000,",
+            "    \"stream\": true",
+            "  }'",
+            "```", "",
+            "| Field | What it does |", "| --- | --- |",
+            "| `model` or `models` | One model ID, or a list: OpenRouter tries them in order if one is down, rate-limited or refuses |",
+            "| `reasoning.effort` | How hard the model thinks; use only the efforts the model supports (table above) |",
+            "| `provider.zdr: true` | Only endpoints with zero data retention; use for anything a client would call confidential |",
+            "| `provider.data_collection: \"deny\"` | Never an endpoint that may train on or store prompts |",
+            "| `provider.require_parameters: true` | Only endpoints that support every parameter sent (for example structured outputs) |",
+            "| `response_format: {\"type\": \"json_schema\", ...}` | Structured output that matches a JSON schema (the routing plan) |",
+            "| `usage.cost` in the response | What the call cost, in USD |", "",
+            "The Claude API call for the same work is `POST https://api.anthropic.com/v1/messages` with `model` set to the Claude API ID above and `output_config.effort` for effort. The web app's code is in `web/server/openrouter.ts` and `web/server/claude.ts`.", "",
+            "## Privacy and routing rules", "",
+            "- **Client confidential data** goes only to the Claude API directly or to OpenRouter with zero data retention enforced. The web app enforces it by default (`OPENROUTER_ZDR`, on unless set to `false`).",
+            "- **Regulated data** (patient records, privileged legal files, anything under a BAA) goes to no model without a signed agreement that covers it. When unsure, use Claude on the Claude API and say so.",
+            "- **Review with a different family** than the one that wrote the work; the QA gate's primary is Gemini for that reason.",
+            "- **Recommending a model to a client** also goes through `vendor-and-tool-approval` (data terms, retention, BAA, exit path).", "",
+            "## Sources", ""]
+    for label_, url in SOURCES:
+        out.append(f"- {label_}: <{url}> (retrieved {CATALOG_DATE})")
+    out += ["", "Benchmark data: Source: OpenRouter (openrouter.ai), licensed CC BY 4.0. Costs per task are OpenRouter's measured averages for its own runs, not quotes; real costs depend on prompt length and caching.", ""]
+    return "\n".join(out).rstrip() + "\n"
+
+
+def model_catalog_json():
+    data = dict(
+        date=CATALOG_DATE,
+        sources=[dict(label=label_, url=url) for label_, url in SOURCES],
+        tiers=TIERS,
+        models={key: dict(m, task_cost=round(task_cost(key), 4)) for key, m in MODELS.items()},
+        task_types=[dict(name=task, tier=tier, primary=primary, fallback=fallback, effort=effort, why=why,
+                         examples=TASK_INFO[task]["examples"], claude_brain=TASK_INFO[task]["brain"])
+                    for task, tier, primary, fallback, effort, why in TASK_MODELS],
+        roles=dict(routing=dict(primary=ROLES["routing"][0], fallback=ROLES["routing"][1], effort=ROLES["routing"][2], why=ROLES["routing"][3]),
+                   synthesis=dict(task_type=ROLES["synthesis"][0])),
+        agent_task_type=AGENT_TASK,
+    )
+    return json.dumps(data, indent=2, ensure_ascii=False) + "\n"
 
 
 def knowledge_readme(agent):
@@ -481,6 +608,33 @@ def validate():
     for name in WORKFLOWS:
         if name not in SKILLS:
             problems.append(f"workflow {name} has no skill")
+    task_names = [x[0] for x in TASK_TYPES]
+    for task, tier, primary, fallback, effort, why in TASK_MODELS:
+        if task not in task_names:
+            problems.append(f"models: unknown task type {task}")
+        if tier not in TIERS:
+            problems.append(f"models: {task}: unknown tier {tier}")
+        for key in (primary, fallback):
+            if key not in MODELS:
+                problems.append(f"models: {task}: unknown model {key}")
+        if primary == fallback:
+            problems.append(f"models: {task}: fallback is the primary")
+        for key in (primary, fallback):
+            if key in MODELS and effort not in MODELS[key]["efforts"] and key == primary:
+                problems.append(f"models: {task}: {key} does not support effort {effort}")
+    for task in task_names:
+        if task not in [x[0] for x in TASK_MODELS]:
+            problems.append(f"models: task type {task} has no model")
+    if ROLES["synthesis"][0] not in task_names or any(k not in MODELS for k in ROLES["routing"][:2]):
+        problems.append("models: ROLES names an unknown task type or model")
+    for aid, task in AGENT_TASK.items():
+        if aid not in BY_ID:
+            problems.append(f"models: AGENT_TASK names unknown agent {aid}")
+        if task not in task_names:
+            problems.append(f"models: {aid}: unknown task type {task}")
+    for a in AGENTS:
+        if a["id"] not in AGENT_TASK:
+            problems.append(f"models: {a['id']} has no task type in AGENT_TASK")
     if problems:
         raise SystemExit("build: " + "\n  ".join(["invalid data:"] + problems))
 
@@ -497,6 +651,8 @@ def outputs(personas):
         files["knowledge/README.md"] = knowledge_index()
         for a in AGENTS:
             files[f"knowledge/{a['id']}/README.md"] = knowledge_readme(a)
+    files["docs/model-catalog.md"] = model_catalog_md()
+    files["docs/model-catalog.json"] = model_catalog_json()
     claude = ROOT / "CLAUDE.md"
     if claude.exists():
         files["CLAUDE.md"] = claude_md(claude.read_text(), personas)

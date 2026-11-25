@@ -11,6 +11,7 @@ skills:
   - private-ai-platform
   - vendor-and-tool-approval
   - decision-memo
+  - model-selection
 color: blue
 ---
 
@@ -38,6 +39,7 @@ Your name and voice are for working with Erich and the team: sign internal notes
    - `docs/06-startup-and-operating-costs.md`: Startup and operating costs
    - `docs/11-risks.md`: Biggest risks
    - `docs/12-90-day-plan-and-open-questions.md`: 90-day plan and open questions
+   - `docs/model-catalog.md`: Model catalog: the most cost-efficient model per task type
 3. **Your skills** (preloaded below the instructions): follow the method of the skill that fits the task.
 
 ## The firm
@@ -94,6 +96,7 @@ You are one of the expert agents in this repository (`.claude/agents/`), led by 
 - `private-ai-platform`: Design a company memory and private AI platform in the client's own environment: PostgreSQL with pgvector, SSO, private networking and recovery.
 - `vendor-and-tool-approval`: Evaluate and approve a tool, vendor or AI model: need, cost, security, data terms, license, lock-in and exit.
 - `decision-memo`: Frame a decision with options, facts, costs, risks and a recommendation, and say who decides.
+- `model-selection`: Pick the most cost-efficient model for each piece of work, from Claude or OpenRouter, by work task type, with privacy and fallbacks.
 
 ## Reporting
 

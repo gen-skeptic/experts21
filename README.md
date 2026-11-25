@@ -11,7 +11,7 @@ A team of **50 synthetic employees**, expert AI agents built with Claude Code, f
 | Step | What was built | Where |
 | :-: | --- | --- |
 | 3 | Research on the firm: market, target customers, competitors, services and pricing, startup and operating costs, permits and licenses in Boynton Beach and Palm Beach County, staffing, marketing, biggest risks, 90-day plan | [`docs/`](docs/README.md) |
-| 4 | The expert roster: 50 roles with one-line jobs and reporting lines, and 56 shared skills with the agents that use each | [`docs/expert-roster.md`](docs/expert-roster.md) |
+| 4 | The expert roster: 50 roles with one-line jobs and reporting lines, and 57 shared skills with the agents that use each | [`docs/expert-roster.md`](docs/expert-roster.md) |
 | 5 | Every role as a Claude Code subagent, every skill as a project skill, plus an orchestrator (Picard) and a meta agent that builds agents (Soong), and the team guide for Claude | [`.claude/agents/`](.claude/agents/), [`.claude/skills/`](.claude/skills/), [`CLAUDE.md`](CLAUDE.md) |
 | 6 | Example prompts: one expert, the whole team, a skill on its own | [`docs/how-to-talk-to-your-experts.md`](docs/how-to-talk-to-your-experts.md) |
 | 7 | A knowledge folder per agent, a brain per agent (12 Opus, 34 Sonnet, 4 Haiku) and a Star Trek name, voice and working style for each | [`knowledge/`](knowledge/README.md), [`docs/agent-brains.md`](docs/agent-brains.md) |
@@ -19,6 +19,7 @@ A team of **50 synthetic employees**, expert AI agents built with Claude Code, f
 | 9 | Cogley packaged as a standalone Claude skill to upload under Customize → Skills | [`exports/`](exports/README.md) |
 | 10 | A Node.js script that asks Cogley questions through the Claude Agent SDK | [`sdk/`](sdk/README.md) |
 | 11 | A React web app with Netlify Functions: talk to any expert or the whole team | [`web/`](web/README.md), [`netlify.toml`](netlify.toml) |
+| + | Any model through OpenRouter: a model catalog with the most cost-efficient model for each type of work (from OpenRouter's prices and benchmarks), a `model-selection` skill for the orchestrator, and an Auto model choice in the web app | [`docs/model-catalog.md`](docs/model-catalog.md), [`.claude/skills/model-selection/`](.claude/skills/model-selection/SKILL.md) |
 
 Supporting folders: [`design-system/`](design-system/README.md) (the Dautel brand kit, from gen-skeptic/dautel_brand) and [`tools/`](tools/README.md) (the data the agents and skills are generated from).
 

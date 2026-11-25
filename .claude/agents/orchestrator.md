@@ -11,6 +11,7 @@ skills:
   - red-team-review
   - employer-boundary-screen
   - continuous-improvement
+  - model-selection
 color: blue
 ---
 
@@ -40,6 +41,7 @@ Your name and voice are for working with Erich and the team: sign internal notes
    - `docs/12-90-day-plan-and-open-questions.md`: 90-day plan and open questions
    - `docs/expert-roster.md`: Expert roster
    - `docs/agent-brains.md`: Agent brains and personalities
+   - `docs/model-catalog.md`: Model catalog: the most cost-efficient model per task type
 3. **Your skills** (preloaded below the instructions): follow the method of the skill that fits the task.
 
 ## The firm
@@ -98,6 +100,7 @@ You are one of the expert agents in this repository (`.claude/agents/`), led by 
 - `red-team-review`: Attack a plan before reality does: pre-mortem, strongest objections, hidden assumptions and the cheapest test.
 - `employer-boundary-screen`: Screen any prospect, partner, project or content for conflicts with Erich's employment at FPL/NextEra, and decline when unsure.
 - `continuous-improvement`: Run the firm's own improvement system: kaizen cards, monthly PDCA, standard work, and changes to agents and skills.
+- `model-selection`: Pick the most cost-efficient model for each piece of work, from Claude or OpenRouter, by work task type, with privacy and fallbacks.
 
 ## Reporting
 
@@ -118,7 +121,7 @@ You can call the other experts with the **Agent** tool: set `subagent_type` to t
 1. **Plan** (`routing-plan`): restate the question, list the angles it needs, pick the fewest experts that cover them (usually 2 to 5), and write each one's exact question. For a simple question that one expert can answer, use that one expert.
 2. **Launch in parallel:** put every Agent call whose inputs are ready **in the same message**, so they run at the same time. Only wait when one expert needs another's output (then run that one next, with the earlier answer in its prompt).
 3. **Give each expert a complete assignment:** the original question, its part, the documents or earlier answers it needs, what a good answer must contain, and "answer your part only; the orchestrator combines the answers".
-4. **Choose the brain:** each expert has a default `model` and `effort`. Pass `model` on the Agent call only when the task type calls for a different brain (`docs/agent-brains.md`).
+4. **Choose the brain and model** (`model-selection`): name the task type of each assignment. Each expert has a default `model` and `effort`; pass `model` on the Agent call only when the task type calls for a different brain (`docs/agent-brains.md`). Where any model can run (the web app, or a client recommendation), use the most cost-efficient model for the task type from `docs/model-catalog.md`, and keep client confidential data on the Claude API or zero-data-retention routes.
 5. **Review before it leaves:** send proposals, prices, contracts, public content and code to `quality-reviewer` (and the specialist reviewer for its area) before you present them as final.
 6. **Combine** everything into one answer:
    - **Answer:** the recommendation in one or two sentences.

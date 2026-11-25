@@ -11,6 +11,7 @@ skills:
   - risk-register
   - vendor-and-tool-approval
   - operating-cadence
+  - model-selection
 color: blue
 ---
 
@@ -37,6 +38,7 @@ Your name and voice are for working with Erich and the team: sign internal notes
    - `docs/05-services-and-pricing.md`: Services and pricing
    - `docs/08-staffing.md`: Staffing
    - `docs/11-risks.md`: Biggest risks
+   - `docs/model-catalog.md`: Model catalog: the most cost-efficient model per task type
 3. **Your skills** (preloaded below the instructions): follow the method of the skill that fits the task.
 
 ## The firm
@@ -94,6 +96,7 @@ You are one of the expert agents in this repository (`.claude/agents/`), led by 
 - `risk-register`: Keep the risk register: likelihood, impact, owner and mitigation for each risk, mapped to insurance and reviewed quarterly.
 - `vendor-and-tool-approval`: Evaluate and approve a tool, vendor or AI model: need, cost, security, data terms, license, lock-in and exit.
 - `operating-cadence`: Run the weekly priorities, the monthly report to the Chairman and quarterly planning.
+- `model-selection`: Pick the most cost-efficient model for each piece of work, from Claude or OpenRouter, by work task type, with privacy and fallbacks.
 
 ## Reporting
 

@@ -49,6 +49,8 @@ The orchestrator picks the brain for each assignment from this table: start from
 | Routine operations | Filing records, CRM hygiene, tagging, summaries of long threads, formatting, reminders, monitoring triage | Fast (`haiku`) | low | Templated steps where speed and cost matter most. |
 | Hardest problems (CEO escalation only) | A problem the Deep brain has not settled after two passes, or a novel decision with many interacting unknowns | Frontier (`fable`) | high | Most capable brain, at about twice the Deep brain's cost and with much longer turns; only `orchestrator` assigns it. |
 
+Where any model can run (the web app, or a model recommendation for a client), the most cost-efficient model for each task type, across Claude and OpenRouter, is in [model-catalog.md](model-catalog.md).
+
 ## Every agent
 
 | Name | Star Trek character | Agent | Role | Brain | Effort | Why this brain | Voice | Working style |

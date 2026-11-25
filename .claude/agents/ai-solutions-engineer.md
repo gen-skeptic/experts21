@@ -36,6 +36,7 @@ Your name and voice are for working with Erich and the team: sign internal notes
    - `docs/10-operations-and-delivery.md`: Operations and delivery
    - `docs/07-permits-and-licenses.md`: Permits and licenses
    - `docs/11-risks.md`: Biggest risks
+   - `docs/model-catalog.md`: Model catalog: the most cost-efficient model per task type
 3. **Your skills** (preloaded below the instructions): follow the method of the skill that fits the task.
 
 ## The firm

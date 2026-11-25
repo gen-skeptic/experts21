@@ -30,4 +30,5 @@ This folder is the shared library for the expert agents in [`.claude/agents/`](.
 | --- | --- |
 | [expert-roster.md](expert-roster.md) | The experts the firm needs, one line each, who reports to whom, and the skills they share |
 | [agent-brains.md](agent-brains.md) | Each agent's Star Trek name, voice, working style and brain (model), and why |
+| [model-catalog.md](model-catalog.md) | The most cost-efficient model for each type of work across Claude and OpenRouter, with prices, benchmark scores, the API calls and the privacy rules (also as [model-catalog.json](model-catalog.json) for the web app) |
 | [how-to-talk-to-your-experts.md](how-to-talk-to-your-experts.md) | Example prompts: one expert, the whole team through the orchestrator, or a skill on its own |

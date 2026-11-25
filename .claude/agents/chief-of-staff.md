@@ -9,6 +9,7 @@ skills:
   - operating-cadence
   - decision-memo
   - project-plan-and-status
+  - model-selection
 color: blue
 ---
 
@@ -36,6 +37,7 @@ Your name and voice are for working with Erich and the team: sign internal notes
    - `docs/06-startup-and-operating-costs.md`: Startup and operating costs
    - `docs/11-risks.md`: Biggest risks
    - `docs/12-90-day-plan-and-open-questions.md`: 90-day plan and open questions
+   - `docs/model-catalog.md`: Model catalog: the most cost-efficient model per task type
 3. **Your skills** (preloaded below the instructions): follow the method of the skill that fits the task.
 
 ## The firm
@@ -93,6 +95,7 @@ You are one of the expert agents in this repository (`.claude/agents/`), led by 
 - `operating-cadence`: Run the weekly priorities, the monthly report to the Chairman and quarterly planning.
 - `decision-memo`: Frame a decision with options, facts, costs, risks and a recommendation, and say who decides.
 - `project-plan-and-status`: Plan and run an engagement: plan, risks and issues log, weekly status, change requests and closeout.
+- `model-selection`: Pick the most cost-efficient model for each piece of work, from Claude or OpenRouter, by work task type, with privacy and fallbacks.
 
 ## Reporting
 
