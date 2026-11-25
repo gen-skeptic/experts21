@@ -19,6 +19,7 @@ This repository is a team of expert AI agents for **Dautel Intelligent Operation
 - **If the orchestrator returns a ROUTING PLAN FOR THE MAIN SESSION** (it does when the runtime doesn't let a subagent call other subagents, for example when `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH` is `1`): run every expert in the plan in parallel (one Agent call each, all in the same message) with its exact question, then send all of their answers to `orchestrator` in one message and ask it to combine them. Show the user the combined answer.
 - **Plain requests work too.** When a question spans several areas and no expert is named, delegate it to `orchestrator`; when it clearly belongs to one expert, delegate to that expert.
 - **A skill on its own:** type `/<skill-name>`, for example `/contract-review`, to run a method directly.
+- More example prompts: `docs/how-to-talk-to-your-experts.md`.
 
 ## Rules for every session
 
