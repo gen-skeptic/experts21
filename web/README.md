@@ -38,10 +38,10 @@ flowchart LR
 
 **<https://dio-experts21.netlify.app>** (Netlify project `dio-experts21` on the gen-skeptic team, Free plan), deployed November 25, 2026.
 
-Two things to finish in the Netlify UI, because they need your accounts:
+How it is set up (November 25, 2026):
 
-1. **Link the GitHub repository** so every push to `main` rebuilds the site: open the project, **Project configuration → Build & deploy → Continuous deployment → Link repository → GitHub → gen-skeptic/experts21**, branch `main`. Leave the build settings empty; `netlify.toml` fills them in.
-2. **Choose who pays for the answers.** Netlify's **AI Gateway** is on for credit-based plans: it gives the functions Claude credentials automatically and bills your **Netlify credits** (the Free plan's AI rate limit is 90 credits a minute for the whole team, about $0.50 of model use, so team questions can be slowed or refused at busy moments). To use your own keys instead, add `ANTHROPIC_API_KEY` and `OPENROUTER_API_KEY` (step 4 below) and redeploy; Netlify then defers to your keys. Add `APP_PASSWORD` too if the link will be shared widely. *(November 25, 2026: `APP_PASSWORD`, `ANTHROPIC_API_KEY` and `OPENROUTER_API_KEY` are set.)*
+1. **The GitHub repository is linked** (gen-skeptic/experts21, branch `main`), so every push to `main` rebuilds and redeploys the site; `netlify.toml` supplies the build settings. To check or change it: **Project configuration → Build & deploy → Continuous deployment**.
+2. **Your own keys pay for the answers:** `ANTHROPIC_API_KEY` and `OPENROUTER_API_KEY` are set, so Netlify's **AI Gateway** (which otherwise gives the functions Claude credentials and bills your **Netlify credits**, with the Free plan's AI rate limit of 90 credits a minute for the whole team) defers to them. `APP_PASSWORD` is set too, so only people you share it with can spend that credit.
 
 ## Deploy on Netlify
 
