@@ -7,11 +7,12 @@
 Inputs:  tools/team.py (agents), tools/skills.py and tools/skills_*.py (skills), tools/workflows.py (team workflows),
          tools/brains.py (brains and task types), tools/models.py (the model catalog).
 Outputs: .claude/agents/<agent>.md, .claude/skills/<skill>/SKILL.md, knowledge/README.md and knowledge/<agent>/README.md,
-         docs/expert-roster.md, docs/agent-brains.md, docs/model-catalog.md and .json, and the generated team section
-         of CLAUDE.md.
+         docs/expert-roster.md, docs/agent-brains.md, docs/model-catalog.md and .json, the generated team section
+         of CLAUDE.md and the generated blocks of README.md (badges, stats, org chart, agents, models).
 Documents you add to a knowledge folder are never touched.
 """
 import json
+import re
 import sys
 from collections import Counter
 from pathlib import Path
@@ -580,6 +581,141 @@ def claude_md(current, personas):
     return head + claude_team_section(personas) + tail
 
 
+# ---------------------------------------------------------------- README.md generated blocks (same look as gen-skeptic/experts)
+
+BADGE = "https://img.shields.io/badge/{label}-{message}-{color}?style=flat-square&labelColor=1e1e2e"
+MERMAID_INIT = '%%{init: {"theme": "base", "themeVariables": {"lineColor": "#6f7985", "primaryColor": "#101720", "primaryTextColor": "#f2f0e9", "primaryBorderColor": "#2a3541"}}}%%'
+MERMAID_CLASSES = [
+    "  classDef chair fill:#151d27,stroke:#c7a4ff,stroke-width:2px,color:#f2f0e9",
+    "  classDef ceo fill:#151d27,stroke:#8bc4ff,stroke-width:2px,color:#f2f0e9",
+    "  classDef head fill:#101720,stroke:#8bc4ff,color:#f2f0e9",
+    "  classDef member fill:#101720,stroke:#2a3541,color:#f2f0e9",
+    "  classDef advisor fill:#101720,stroke:#c7a4ff,stroke-dasharray:4 3,color:#c7cdd4",
+]
+
+
+def badge(label_, message, color, link, alt):
+    enc = lambda s: s.replace("-", "--").replace("_", "__").replace(" ", "_").replace(",", "%2C").replace(">", "%3E")
+    return f"[![{alt}]({BADGE.format(label=enc(label_), message=enc(message), color=color)})]({link})"
+
+
+def short_title(agent_id):
+    return re.sub(r"\s*\(.*?\)", "", BY_ID[agent_id]["title"]).strip()
+
+
+def node_id(agent_id):
+    return agent_id.replace("-", "_")
+
+
+def node_class(agent_id):
+    a = BY_ID[agent_id]
+    if agent_id == ORCHESTRATOR_ID:
+        return "ceo"
+    if a.get("advisor"):
+        return "advisor"
+    return "head" if a["reports_to"] == ORCHESTRATOR_ID else "member"
+
+
+def descendants(agent_id):
+    out = []
+    for r in reports(agent_id):
+        out.append(r["id"])
+        out += descendants(r["id"])
+    return out
+
+
+def unit_name(agent_id):
+    return ORG_UNITS.get(agent_id) or BY_ID[agent_id]["group"]
+
+
+ORCHESTRATOR_ID = "orchestrator"
+
+
+def org_mermaid():
+    ceo = BY_ID[ORCHESTRATOR_ID]
+    lines = ["```mermaid", MERMAID_INIT, "flowchart LR", '  chair(["Erich Dautel<br/>Chairman"]):::chair',
+             f'  {node_id(ORCHESTRATOR_ID)}["{ceo["name"]} · {short_title(ORCHESTRATOR_ID)}<br/>{ORCHESTRATOR_ID}"]:::ceo',
+             f"  chair --> {node_id(ORCHESTRATOR_ID)}"]
+    for a in AGENTS:
+        if a["reports_to"] == "erich" and a["id"] != ORCHESTRATOR_ID:
+            lines.append(f'  chair -.-> {node_id(a["id"])}["{a["name"]} · {short_title(a["id"])}<br/>{a["id"]}"]:::advisor')
+    for h in reports(ORCHESTRATOR_ID):
+        size = len(descendants(h["id"]))
+        team = f"<br/>team of {size}" if size else ""
+        arrow = "-.->" if h.get("advisor") else "-->"
+        lines.append(f'  {node_id(ORCHESTRATOR_ID)} {arrow} {node_id(h["id"])}["{unit_name(h["id"])}<br/>{h["name"]} · {short_title(h["id"])}<br/>{h["id"]}{team}"]:::{node_class(h["id"])}')
+    return "\n".join(lines + MERMAID_CLASSES + ["```"])
+
+
+def unit_mermaid(head_id):
+    head = BY_ID[head_id]
+    lines = ["```mermaid", MERMAID_INIT, "flowchart LR", f'  {node_id(head_id)}["{head["name"]} · {short_title(head_id)}<br/>{head_id}"]:::head']
+    queue = [head_id]
+    while queue:
+        mgr = queue.pop(0)
+        for r in reports(mgr):
+            arrow = "-.->" if r.get("advisor") else "-->"
+            lines.append(f'  {node_id(mgr)} {arrow} {node_id(r["id"])}["{r["name"]} · {short_title(r["id"])}<br/>{r["id"]}"]:::{node_class(r["id"])}')
+            queue.append(r["id"])
+    return "\n".join(lines + MERMAID_CLASSES + ["```"])
+
+
+def readme_blocks():
+    n_agents, n_skills = len(AGENTS), len(SKILLS)
+    by_model = Counter(a["model"] for a in AGENTS)
+    badges = "\n".join([
+        badge(">_", "Fix first, then automate", "89b4fa", "#_-experts21-the-dio-expert-team", "Fix first, then automate"),
+        badge("agents", str(n_agents), "a6e3a1", "docs/agent-brains.md", "Agents"),
+        badge("skills", str(n_skills), "cba6f7", "docs/expert-roster.md", "Skills"),
+        badge("models", f"{len(MODELS)} in the catalog", "89b4fa", "docs/model-catalog.md", "Models"),
+        badge("design system", "Dautel", "89b4fa", "design-system/BRAND.md", "Design system"),
+        badge("web", "dio-experts21.netlify.app", "a6e3a1", "https://dio-experts21.netlify.app", "Live app"),
+    ])
+    stats = "\n".join(["<table>", "<tr>",
+                       f'<td width="25%" align="center"><b>{n_agents}</b><br>expert agents</td>',
+                       f'<td width="25%" align="center"><b>{n_skills}</b><br>shared skills</td>',
+                       f'<td width="25%" align="center"><b>{len([p for p in DOC_TITLES if re.match(r"docs/\d", p)])}</b><br>research files</td>',
+                       f'<td width="25%" align="center"><b>{len(TASK_MODELS)}</b><br>task types, each with its cheapest fit</td>',
+                       "</tr>", "</table>"])
+    table = ["| Unit | Head (reports to Picard) | Team |", "| --- | --- | --- |",
+             f"| Board | Erich (Chairman), advised by " + ", ".join(f"{a['name']} (`{a['id']}`)" for a in AGENTS if a["reports_to"] == "erich" and a["id"] != ORCHESTRATOR_ID) + f" | {BY_ID[ORCHESTRATOR_ID]['name']} (`{ORCHESTRATOR_ID}`), the orchestrator |"]
+
+    def team_of(agent_id):
+        parts = []
+        for r in reports(agent_id):
+            sub = reports(r["id"])
+            parts.append(f"{r['name']}" + (f" (leads {', '.join(x['name'] for x in sub)})" if sub else ""))
+        return ", ".join(parts) if parts else "—"
+    for h in reports(ORCHESTRATOR_ID):
+        table.append(f"| {unit_name(h['id'])} | {h['name']} (`{h['id']}`) | {team_of(h['id'])} |")
+    units = ["<details>", "<summary><b>Each unit, everyone in it</b></summary>", ""]
+    for h in reports(ORCHESTRATOR_ID):
+        if descendants(h["id"]):
+            units += [f"**{unit_name(h['id'])}**", "", unit_mermaid(h["id"]), ""]
+    units.append("</details>")
+    orgchart = "\n".join([org_mermaid(), "", "\n".join(table), "", "\n".join(units)])
+    agents = ["<details>", f"<summary><b>All {n_agents} agents by group, with their brains</b></summary>", "",
+              "| Group | Agents |", "| --- | --- |"]
+    for group in GROUPS:
+        agents.append(f"| {group} | " + ", ".join(f"{a['name']} (`{a['id']}`, {BRAINS[ALIAS_BRAIN[a['model']]]['label']})" for a in AGENTS if a["group"] == group) + " |")
+    agents += ["", f"Brains: {by_model.get('opus', 0)} Deep (Opus), {by_model.get('sonnet', 0)} Standard (Sonnet), {by_model.get('haiku', 0)} Fast (Haiku). Names, voices, working styles and the reason for each brain: [agent-brains.md](docs/agent-brains.md).", "", "</details>"]
+    models = ["| Work | Model on Auto | Cost per benchmark task pair | Fallback |", "| --- | --- | -: | --- |"]
+    for task, tier, primary, fallback, effort, why in TASK_MODELS:
+        models.append(f"| {task} | **{MODELS[primary]['name']}** | {money(task_cost(primary))} | {MODELS[fallback]['name']} |")
+    models += ["", f"*From OpenRouter's prices and benchmarks on {CATALOG_DATE}. Cost is a like-for-like comparison, not a quote.*"]
+    return {"badges": badges, "stats": stats, "orgchart": orgchart, "agents": "\n".join(agents), "models": "\n".join(models)}
+
+
+def readme_md(current):
+    text = current
+    for name, content in readme_blocks().items():
+        pat = re.compile(rf"<!-- BEGIN GENERATED: {name} -->\n(?:.*?\n)?<!-- END GENERATED: {name} -->", re.S)
+        if not pat.search(text):
+            raise SystemExit(f"README.md: generated block '{name}' not found")
+        text = pat.sub(lambda m: f"<!-- BEGIN GENERATED: {name} -->\n{content}\n<!-- END GENERATED: {name} -->", text)
+    return text
+
+
 # ---------------------------------------------------------------- build
 
 def validate():
@@ -656,6 +792,9 @@ def outputs(personas):
     claude = ROOT / "CLAUDE.md"
     if claude.exists():
         files["CLAUDE.md"] = claude_md(claude.read_text(), personas)
+    readme = ROOT / "README.md"
+    if personas and readme.exists() and "<!-- BEGIN GENERATED: badges -->" in readme.read_text():
+        files["README.md"] = readme_md(readme.read_text())
     return files
 
 

@@ -13,6 +13,7 @@ The expert team is data. These files define it, and `build.py` turns them into t
 | [`refresh_models.py`](refresh_models.py) | Read-only: downloads OpenRouter's live model list and benchmark data and prints the ranking per tier, to update `models.py` every quarter |
 | [`build.py`](build.py) | The generator and its check |
 | [`export_skill.py`](export_skill.py) | Packages one agent as a standalone Claude skill zip in `exports/` |
+| [`banner/`](banner/) | The README banner (`banner.html`) and its renderer: `node tools/banner/render.js` writes `assets/readme-banner.png` (needs Playwright with Chromium) |
 
 ## Build
 
@@ -24,7 +25,7 @@ python3 tools/build.py
 python3 tools/build.py --check
 ```
 
-The build writes `.claude/agents/<agent>.md`, `.claude/skills/<skill>/SKILL.md`, `docs/expert-roster.md`, `docs/agent-brains.md`, `docs/model-catalog.md` and `docs/model-catalog.json`, `knowledge/README.md` and each `knowledge/<agent>/README.md`, and the team table in `CLAUDE.md`, and removes agent or skill files that are no longer defined. `--check` fails if any of them is missing, stale or edited by hand. It needs only Python 3 (standard library).
+The build writes `.claude/agents/<agent>.md`, `.claude/skills/<skill>/SKILL.md`, `docs/expert-roster.md`, `docs/agent-brains.md`, `docs/model-catalog.md` and `docs/model-catalog.json`, `knowledge/README.md` and each `knowledge/<agent>/README.md`, the team table in `CLAUDE.md` and the generated blocks of the root `README.md` (badges, stats, org chart, agents, models, in the same style as gen-skeptic/experts), and removes agent or skill files that are no longer defined. `--check` fails if any of them is missing, stale or edited by hand. It needs only Python 3 (standard library).
 
 ## Where the data came from
 

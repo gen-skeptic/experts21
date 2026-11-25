@@ -32,7 +32,7 @@ This repository is a team of expert AI agents for **Dautel Intelligent Operation
 
 ## Changing the team
 
-The files in `.claude/agents/`, `.claude/skills/`, `docs/expert-roster.md`, `docs/agent-brains.md`, `docs/model-catalog.md` and `.json`, and the `README.md` in each knowledge folder are **generated**. Documents added to a knowledge folder are not; add them freely (this repository is public). To add or change an agent or a skill, edit `tools/team.py` (agents) or `tools/skills_*.py` (skills); to change the model catalog, edit `tools/models.py` (`python3 tools/refresh_models.py` prints the current ranking from OpenRouter). Then run:
+The files in `.claude/agents/`, `.claude/skills/`, `docs/expert-roster.md`, `docs/agent-brains.md`, `docs/model-catalog.md` and `.json`, the `README.md` in each knowledge folder, and the `<!-- BEGIN GENERATED -->` blocks of the root `README.md` (badges, stats, org chart, agents, models) are **generated**. Documents added to a knowledge folder are not; add them freely (this repository is public). To add or change an agent or a skill, edit `tools/team.py` (agents) or `tools/skills_*.py` (skills); to change the model catalog, edit `tools/models.py` (`python3 tools/refresh_models.py` prints the current ranking from OpenRouter). Then run:
 
 ```bash
 python3 tools/build.py
