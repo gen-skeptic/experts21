@@ -11,7 +11,8 @@ flowchart LR
 ```
 
 - **The agents are read from this repository at build time** (`scripts/build-agents.mjs`): every `.claude/agents/*.md` (instructions, name, voice, brain, skills), the skills they use, each `knowledge/<agent>/` folder and the `docs/` research files each agent relies on. They are packaged for the functions only; the browser bundle carries no prompts, knowledge or research.
-- **The API keys never reach the browser.** Every model call runs in a Netlify Function, with the keys from the `ANTHROPIC_API_KEY` and `OPENROUTER_API_KEY` environment variables (the Claude key can also be the one Netlify's AI Gateway injects on credit-based plans).
+- **The API keys never reach the browser.** Every model call runs in a Netlify Function, with your keys from the `ANTHROPIC_API_KEY` and `OPENROUTER_API_KEY` environment variables.
+- **No Netlify AI charges by accident.** On credit-based plans, Netlify's **AI Gateway** injects its own `ANTHROPIC_API_KEY` and `OPENROUTER_API_KEY` into functions whenever it can't see yours, and bills those calls to your Netlify credits. The app recognises the injected keys and doesn't use them (Claude models then run through OpenRouter on your key) unless you set `ALLOW_NETLIFY_AI_GATEWAY=true`.
 - **The model menu** under the message box (remembered in your browser):
   - **Auto** (the default): the most cost-efficient model for the kind of work, from the [model catalog](../docs/model-catalog.md). Each agent has a usual task type (Cogley: legal review, so Claude Sonnet 5.5; Wesley: software build, so DeepSeek V4.1 Flash; Tilly: short-form posts, so GPT-6 Luna). In team mode Picard names the task type and model for each assignment, using the `model-selection` skill.
   - **Claude**: each agent's own brain (Opus, Sonnet or Haiku), as in Claude Code.
@@ -41,7 +42,9 @@ flowchart LR
 How it is set up (November 25, 2026):
 
 1. **The GitHub repository is linked** (gen-skeptic/experts21, branch `main`), so every push to `main` rebuilds and redeploys the site; `netlify.toml` supplies the build settings. To check or change it: **Project configuration → Build & deploy → Continuous deployment**.
-2. **Your own keys pay for the answers:** `ANTHROPIC_API_KEY` and `OPENROUTER_API_KEY` are set, so Netlify's **AI Gateway** (which otherwise gives the functions Claude credentials and bills your **Netlify credits**, with the Free plan's AI rate limit of 90 credits a minute for the whole team) defers to them. `APP_PASSWORD` is set too, so only people you share it with can spend that credit.
+2. **Your own keys pay for the answers:** `ANTHROPIC_API_KEY` (billed by Anthropic) and `OPENROUTER_API_KEY` (billed by OpenRouter) are set. Each call is billed once, by whichever key it uses. Netlify's **AI Gateway** stays out of it only while the functions can see your keys; if they can't, Netlify injects its own key, and calls made with it are billed to your **Netlify credits**. The app refuses those injected keys (see `ALLOW_NETLIFY_AI_GATEWAY` below). `APP_PASSWORD` is set too, so only people you share it with can spend that credit.
+
+   **Check which keys the functions see:** open <https://dio-experts21.netlify.app/api/agents> and look at `providers`. `claudeSource` and `openrouterSource` say `own` (your key), `netlify-gateway` (Netlify's injected key, not used) or `none`. Values are never shown. If one says `netlify-gateway`, open **Project configuration → Environment variables**, edit that key, make sure its **scopes include Functions** and it has a value for **Production**, save, then **Deploys → Trigger deploy → Deploy project**. To stop the gateway from injecting anything at all, turn off AI features for the team in Netlify's team settings.
 
 ## Deploy on Netlify
 
@@ -64,6 +67,7 @@ Every push to `main` (a new agent, a document added to a knowledge folder) rebui
 | --- | --- |
 | `APP_PASSWORD` | Visitors must enter it before the app calls any model |
 | `OPENROUTER_API_KEY` | Turns on every non-Claude model in the catalog (and Claude through OpenRouter when `ANTHROPIC_API_KEY` isn't set) |
+| `ALLOW_NETLIFY_AI_GATEWAY` | `true` lets the app use the keys Netlify's AI Gateway injects when yours are missing (billed to Netlify credits). Default: never |
 | `OPENROUTER_ZDR` | `false` allows OpenRouter endpoints without zero data retention (still never ones that collect data). Default: zero data retention only |
 | `WEB_MAX_EFFORT` | Highest effort the web app uses: `low`, `medium` (default) or `high`. Higher is slower and may hit the 60-second limit |
 | `ANTHROPIC_MODEL_OPUS`, `ANTHROPIC_MODEL_SONNET`, `ANTHROPIC_MODEL_HAIKU` | Override the model for a brain (defaults: `claude-opus-5-5`, `claude-sonnet-5-5`, `claude-haiku-5-5`) |

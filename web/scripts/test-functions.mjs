@@ -28,8 +28,10 @@ function planFor(names, withModels) {
 }
 
 function claudeApi(req, res, body) {
-  // The SDK sends the key as x-api-key or, from SDK 1.x, as Authorization: Bearer.
-  if (req.headers["x-api-key"] !== "test-key" && req.headers.authorization !== "Bearer test-key") {
+  // The SDK sends the key as x-api-key or, from SDK 1.x, as Authorization: Bearer. Under /.netlify/ai the mock plays
+  // Netlify's AI Gateway, which takes the gateway's own key.
+  const key = req.url.startsWith("/.netlify/ai/") ? "gateway-key" : "test-key";
+  if (req.headers["x-api-key"] !== key && req.headers.authorization !== `Bearer ${key}`) {
     res.writeHead(401, { "Content-Type": "application/json" }).end(JSON.stringify({ type: "error", error: { type: "authentication_error", message: "invalid x-api-key" } }));
     return;
   }
@@ -150,7 +152,7 @@ await test("agent list: 50 agents, Star Trek names, the model catalog, no prompt
   assert.equal(data.agents.length, 50);
   assert.equal(data.orchestrator, "orchestrator");
   assert.equal(data.configured, true);
-  assert.deepEqual(data.providers, { claude: true, claudeKey: true, openrouter: true, zdr: true });
+  assert.deepEqual(data.providers, { claude: true, openrouter: true, claudeSource: "own", openrouterSource: "own", gatewayAllowed: false, zdr: true });
   assert.equal(data.passwordRequired, false);
   const cogley = data.agents.find((a) => a.id === "business-attorney");
   assert.equal(cogley.name, "Cogley");
@@ -412,11 +414,51 @@ await test("APP_PASSWORD: model calls need the password; the list says so", asyn
   });
 });
 
-await test("Netlify AI Gateway: its injected key counts as configured", async () => {
-  await withEnv({ ANTHROPIC_API_KEY: "", OPENROUTER_API_KEY: "", NETLIFY_AI_GATEWAY_KEY: "gateway-key" }, async () => {
+// Netlify's AI Gateway injects its own ANTHROPIC_API_KEY and ANTHROPIC_BASE_URL when it can't see yours, and bills
+// those calls to Netlify credits. These environments mimic that injection.
+const injectedClaude = () => ({ ANTHROPIC_API_KEY: "gateway-key", ANTHROPIC_BASE_URL: `${MOCK}/.netlify/ai`, NETLIFY_AI_GATEWAY_KEY: "gateway-key", NETLIFY_AI_GATEWAY_URL: `${MOCK}/.netlify/ai` });
+
+await test("Netlify AI Gateway: its injected Claude key is never used; Claude runs on your OpenRouter key", async () => {
+  await withEnv(injectedClaude(), async () => {
     const list = await (await call("GET", "/api/agents")).json();
-    assert.equal(list.configured, true);
-    assert.equal(list.providers.claude, true);
+    assert.equal(list.providers.claudeSource, "netlify-gateway");
+    assert.equal(list.providers.claude, false);
+    assert.equal(list.configured, true, "OpenRouter still works");
+    const ev = await events(await ask("business-attorney"));
+    assert.ok(!seen.some((s) => s.path.startsWith("/.netlify/ai")), "no call through the AI Gateway");
+    assert.equal(seen[0].path, "/openrouter/api/v1/chat/completions");
+    assert.equal(seen[0].body.model, "anthropic/claude-sonnet-5.5");
+    assert.equal(done(ev).api, "OpenRouter");
+  });
+});
+
+await test("Netlify AI Gateway: recognised by its key alone, whatever the base URL", async () => {
+  await withEnv({ NETLIFY_AI_GATEWAY_KEY: "test-key" }, async () => {
+    assert.equal((await (await call("GET", "/api/agents")).json()).providers.claudeSource, "netlify-gateway");
+  });
+});
+
+await test("Netlify AI Gateway: used only with ALLOW_NETLIFY_AI_GATEWAY=true", async () => {
+  await withEnv({ ...injectedClaude(), ALLOW_NETLIFY_AI_GATEWAY: "true" }, async () => {
+    const list = await (await call("GET", "/api/agents")).json();
+    assert.deepEqual([list.providers.claude, list.providers.gatewayAllowed], [true, true]);
+    await events(await ask("business-attorney"));
+    assert.equal(seen[0].path, "/.netlify/ai/v1/messages");
+    assert.equal(seen[0].body.model, "claude-sonnet-5-5");
+  });
+});
+
+await test("Netlify AI Gateway: when it is all the functions see, model calls explain how to fix the keys", async () => {
+  await withEnv({ ...injectedClaude(), OPENROUTER_API_KEY: "gateway-key", OPENROUTER_BASE_URL: `${MOCK}/.netlify/ai/openrouter` }, async () => {
+    const list = await (await call("GET", "/api/agents")).json();
+    assert.deepEqual([list.configured, list.providers.openrouterSource], [false, "netlify-gateway"]);
+    const res = await ask("full-stack-developer");
+    assert.equal(res.status, 503);
+    const { message } = await res.json();
+    assert.match(message, /AI Gateway/);
+    assert.match(message, /scopes include Functions/);
+    assert.match(message, /ALLOW_NETLIFY_AI_GATEWAY/);
+    assert.equal(seen.length, 0);
   });
 });
 

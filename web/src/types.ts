@@ -57,7 +57,15 @@ export interface Catalog {
   brains: Record<string, Brain>;
   orchestrator: string;
   configured: boolean;
-  providers: { claude: boolean; claudeKey: boolean; openrouter: boolean; zdr: boolean };
+  providers: {
+    claude: boolean;
+    openrouter: boolean;
+    /** Where the functions' keys come from: your own, Netlify's AI Gateway (unused unless allowed), or none. */
+    claudeSource: "own" | "netlify-gateway" | "none";
+    openrouterSource: "own" | "netlify-gateway" | "none";
+    gatewayAllowed: boolean;
+    zdr: boolean;
+  };
   models: ModelInfo[];
   taskTypes: TaskTypeInfo[];
   catalogDate: string;

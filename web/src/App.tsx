@@ -304,6 +304,10 @@ export function App() {
           <p className="banner">
             This site may not have model access yet. The owner adds <code>ANTHROPIC_API_KEY</code> or <code>OPENROUTER_API_KEY</code> in Netlify (Project configuration → Environment variables) and redeploys. Questions may fail until then.
           </p>
+        ) : catalog.providers.claudeSource === "netlify-gateway" && !catalog.providers.gatewayAllowed ? (
+          <p className="banner">
+            The functions can't see this site's own <code>ANTHROPIC_API_KEY</code>, only Netlify's AI Gateway key, which would bill Netlify credits, so Claude models run through OpenRouter instead. The owner checks that the key's scopes include Functions and that it applies to Production, then redeploys.
+          </p>
         ) : !catalog.providers.openrouter && modelChoice !== "claude" ? (
           <p className="banner">
             OpenRouter isn't set up on this site (<code>OPENROUTER_API_KEY</code>), so Auto uses only the Claude models in the catalog.

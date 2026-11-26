@@ -2,9 +2,10 @@
 // prompts and knowledge stay on the server.
 import type { Config } from "@netlify/functions";
 import { DATA } from "../../server/agents-data.generated.js";
-import { aiConfigured, claudeReady } from "../../server/claude.js";
+import { aiConfigured, claudeSource } from "../../server/claude.js";
+import { gatewayAllowed } from "../../server/gateway.js";
 import { json, passwordOk, passwordRequired } from "../../server/http.js";
-import { openrouterReady, zdrEnforced } from "../../server/openrouter.js";
+import { openrouterReady, openrouterSource, zdrEnforced } from "../../server/openrouter.js";
 import { CATALOG } from "../../server/route.js";
 
 export default async (req: Request) => {
@@ -47,7 +48,16 @@ export default async (req: Request) => {
     brains: DATA.brains,
     orchestrator: DATA.orchestrator,
     configured: aiConfigured() || openrouterReady(),
-    providers: { claude: aiConfigured(), claudeKey: claudeReady(), openrouter: openrouterReady(), zdr: zdrEnforced() },
+    // Which keys the functions see (never their values): "own", "netlify-gateway" (Netlify's injected key, unused
+    // unless ALLOW_NETLIFY_AI_GATEWAY=true) or "none".
+    providers: {
+      claude: aiConfigured(),
+      openrouter: openrouterReady(),
+      claudeSource: claudeSource(),
+      openrouterSource: openrouterSource(),
+      gatewayAllowed: gatewayAllowed(),
+      zdr: zdrEnforced(),
+    },
     models,
     taskTypes,
     catalogDate: CATALOG.date,

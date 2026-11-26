@@ -5,16 +5,28 @@
 // that may store or train on prompts (provider.data_collection: "deny"). Set OPENROUTER_ZDR=false to allow endpoints
 // that keep data for a while (still never for training).
 import { env } from "./env.js";
+import { isGatewayUrl, keySource, usable, type KeySource } from "./gateway.js";
 
+/** Where the OpenRouter key in this function's environment came from: yours, Netlify's AI Gateway, or nowhere. */
+export function openrouterSource(): KeySource {
+  return keySource(env("OPENROUTER_API_KEY"), env("OPENROUTER_BASE_URL"));
+}
+
+/** True when the app may call OpenRouter: your own OPENROUTER_API_KEY (the AI Gateway's only with ALLOW_NETLIFY_AI_GATEWAY=true). */
 export function openrouterReady(): boolean {
-  return env("OPENROUTER_API_KEY") !== "";
+  return usable(openrouterSource());
 }
 
 export function zdrEnforced(): boolean {
   return env("OPENROUTER_ZDR").toLowerCase() !== "false";
 }
 
-const baseUrl = () => (env("OPENROUTER_BASE_URL") || "https://openrouter.ai/api/v1").replace(/\/+$/, "");
+/** Your own key goes to openrouter.ai (or the base URL you set), never to the AI Gateway's URL. */
+function baseUrl(): string {
+  const base = env("OPENROUTER_BASE_URL");
+  const url = openrouterSource() === "own" && isGatewayUrl(base) ? "" : base;
+  return (url || "https://openrouter.ai/api/v1").replace(/\/+$/, "");
+}
 
 export class OpenRouterError extends Error {
   constructor(

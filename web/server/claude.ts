@@ -1,6 +1,7 @@
 // Claude API calls. Every call runs inside a Netlify Function, so the API key never reaches the browser.
 import Anthropic from "@anthropic-ai/sdk";
 import { env } from "./env.js";
+import { gatewayAllowed, isGatewayUrl, keySource, usable, type KeySource } from "./gateway.js";
 
 /** Brains the web app runs. Frontier (fable) is left out: its long turns don't fit Netlify's 60-second limit. */
 export const WEB_BRAINS = ["haiku", "sonnet", "opus"] as const;
@@ -35,27 +36,41 @@ export function webEffort(effort: string, cap?: Effort): Effort {
   return EFFORTS.indexOf(want) <= EFFORTS.indexOf(limit) ? want : limit;
 }
 
-/**
- * True when the functions can call Claude: an ANTHROPIC_API_KEY set in Netlify, or Netlify's AI Gateway, which injects
- * Claude credentials into functions on credit-based plans (billed to Netlify credits) unless you set your own key.
- */
-export function aiConfigured(): boolean {
-  return env("ANTHROPIC_API_KEY") !== "" || env("NETLIFY_AI_GATEWAY_KEY") !== "";
+/** Where the Claude key in this function's environment came from: yours, Netlify's AI Gateway, or nowhere. */
+export function claudeSource(): KeySource {
+  return keySource(env("ANTHROPIC_API_KEY"), env("ANTHROPIC_BASE_URL"));
 }
 
-/** True when a Claude API key is in the function's environment now (yours, or the one the AI Gateway injected). */
+/**
+ * True when the app may call Claude: your own ANTHROPIC_API_KEY. Netlify's AI Gateway injects its own Claude key when
+ * it can't see yours and bills those calls to your Netlify credits, so the app uses it only with
+ * ALLOW_NETLIFY_AI_GATEWAY=true.
+ */
 export function claudeReady(): boolean {
-  return env("ANTHROPIC_API_KEY") !== "";
+  return usable(claudeSource());
+}
+
+/** True when Claude can run now, or the AI Gateway would supply a key and is allowed (the gateway injects per function). */
+export function aiConfigured(): boolean {
+  return claudeReady() || (gatewayAllowed() && env("NETLIFY_AI_GATEWAY_KEY") !== "");
+}
+
+/** Your own key goes to the Claude API (or the base URL you set), never to the AI Gateway's URL. */
+function claudeBaseUrl(): string {
+  const base = env("ANTHROPIC_BASE_URL");
+  if (claudeSource() === "own" && isGatewayUrl(base)) return "https://api.anthropic.com";
+  return base || "https://api.anthropic.com";
 }
 
 let client: Anthropic | null = null;
+let clientFor = "";
 function anthropic(): Anthropic {
-  client ??= new Anthropic({
-    apiKey: env("ANTHROPIC_API_KEY"),
-    baseURL: env("ANTHROPIC_BASE_URL") || undefined,
-    maxRetries: 1,
-    timeout: 55_000,
-  });
+  const key = env("ANTHROPIC_API_KEY");
+  const baseURL = claudeBaseUrl();
+  if (!client || clientFor !== `${key}|${baseURL}`) {
+    client = new Anthropic({ apiKey: key, baseURL, maxRetries: 1, timeout: 55_000 });
+    clientFor = `${key}|${baseURL}`;
+  }
   return client;
 }
 

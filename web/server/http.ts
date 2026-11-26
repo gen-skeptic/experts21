@@ -1,5 +1,7 @@
 import { createHash, timingSafeEqual } from "node:crypto";
+import { claudeReady, claudeSource } from "./claude.js";
 import { env } from "./env.js";
+import { openrouterReady, openrouterSource } from "./openrouter.js";
 
 export const SECURITY_HEADERS: Record<string, string> = {
   "Cache-Control": "no-store",
@@ -34,8 +36,15 @@ export async function guard(req: Request): Promise<{ body: Record<string, unknow
   const origin = req.headers.get("origin");
   if (origin && origin !== new URL(req.url).origin) return { error: json(403, { message: "Cross-site requests are not allowed." }) };
   if (!passwordOk(req)) return { error: json(401, { message: "This app needs its password.", passwordRequired: true }) };
-  if (!env("ANTHROPIC_API_KEY") && !env("OPENROUTER_API_KEY")) {
-    return { error: json(503, { message: "No model access: add ANTHROPIC_API_KEY or OPENROUTER_API_KEY in Netlify under Project configuration > Environment variables (or turn on Netlify's AI features), then redeploy." }) };
+  if (!claudeReady() && !openrouterReady()) {
+    const gateway = claudeSource() === "netlify-gateway" || openrouterSource() === "netlify-gateway";
+    return {
+      error: json(503, {
+        message: gateway
+          ? "The functions can't see your ANTHROPIC_API_KEY or OPENROUTER_API_KEY, only the key Netlify's AI Gateway injects, which would bill your Netlify credits, so the app doesn't use it. In Netlify, check that your key's scopes include Functions and that it applies to Production, then redeploy (or set ALLOW_NETLIFY_AI_GATEWAY=true to use the gateway)."
+          : "No model access: add ANTHROPIC_API_KEY or OPENROUTER_API_KEY in Netlify under Project configuration > Environment variables, then redeploy.",
+      }),
+    };
   }
   const raw = await req.text();
   if (raw.length > 200_000) return { error: json(413, { message: "The request is too large." }) };
